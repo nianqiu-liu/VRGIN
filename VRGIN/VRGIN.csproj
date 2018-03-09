@@ -44,9 +44,11 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
       <HintPath>..\Libs\Unity 5.6.5\UnityEngine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>..\Libs\Unity 5.6.5\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="WindowsInput">
       <HintPath>..\Libs\WindowsInput.dll</HintPath>

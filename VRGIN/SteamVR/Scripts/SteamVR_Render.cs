@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: Handles rendering of all SteamVR_Cameras
 //
@@ -337,11 +337,9 @@ public class SteamVR_Render : MonoBehaviour
 #else
 	void OnCameraPreCull(Camera cam)
 	{
-#if false
-#if !(UNITY_5_4)
+#if !(UNITY_5_4 || UNITY_5_6)
 		if (cam.cameraType != CameraType.VR)
 			return;
-#endif
 #endif
 		// Only update poses on the first camera per frame.
 		if (Time.frameCount != lastFrameCount)

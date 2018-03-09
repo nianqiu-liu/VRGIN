@@ -28,23 +28,21 @@ Please carry out referring to the following.
 - Open the created dump file and fix from 0 vector enabledVRDevices on line 22 to 0 int size = 0 as shown below.
 
 _修正前 preview fix_
-'''
- 0 vector enabledVRDevices
-  0 Array Array (0 items)
-   0 int size = 0
-'''
-_修正後 after fix_
-'''
- 0 vector enabledVRDevices
-  0 Array Array (1 items)
-   0 int size = 1
-   [0]
-    1 string data = "OpenVR"
-'''
-\*1)0 vector buildTags の前行まで置き換える.
-\*1)0 Replace the previous line of vector buildTags.
-\*2)"Oculus"にすればOculusでも動くかもしれませんが、未確認です。
-\*2)If it is "Oculus" it may work with Oculus, but it is unconfirmed.
 
-- 再度UABEでglobalgamemanagerを開き、修正したダンプファイルをインポートして更新してください。
+0 vector enabledVRDevices  
+ 0 Array Array (0 items)  
+  0 int size = 0  
+
+_修正後 after fix_
+
+0 vector enabledVRDevices  
+ 0 Array Array (1 items)  
+  0 int size = 1  
+  [0]  
+   1 string data = "OpenVR"  
+
+\*1)0 vector buildTags の前行まで置き換える/0 Replace the previous line of vector buildTags.  
+\*2)"Oculus"にすればOculusでも動くかもしれませんが、未確認です。/If it is "Oculus" it may work with Oculus, but it is unconfirmed.  
+
+- 再度UABEでglobalgamemanagerを開き、修正したダンプファイルをインポートして更新してください。  
 - Open globalgamemanager again with UABE and import and update the modified dump file.

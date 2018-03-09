@@ -157,12 +157,12 @@ namespace VRGIN.Controls
         {
             GameObject.Destroy(gameObject);
 
-            SteamVR_Utils.Event.Remove("render_model_loaded", _OnRenderModelLoaded);
+			SteamVR_Events.RenderModelLoaded.Remove(_OnRenderModelLoaded);
         }
 
         protected void SetUp()
         {
-            SteamVR_Utils.Event.Listen("render_model_loaded", _OnRenderModelLoaded);
+			SteamVR_Events.RenderModelLoaded.Listen(_OnRenderModelLoaded);
 
             Tracking = gameObject.AddComponent<SteamVR_TrackedObject>();
             Rumble = gameObject.AddComponent<RumbleManager>();
@@ -191,27 +191,24 @@ namespace VRGIN.Controls
             gameObject.AddComponent<Rigidbody>().isKinematic = true;
         }
 
-        private void _OnRenderModelLoaded(object[] args)
+		private void _OnRenderModelLoaded(SteamVR_RenderModel model, bool isLoaded)
         {
             try
             {
-                if (args.Length > 0)
-                {
-                    var renderModel = args[0] as SteamVR_RenderModel;
+				var renderModel = model;
                     if (renderModel && renderModel.transform.IsChildOf(transform))
                     {
                         VRLog.Info("Render model loaded!");
                         gameObject.SendMessageToAll("OnRenderModelLoaded");
                         OnRenderModelLoaded();
                     }
-                }
             } catch(Exception e)
             {
                 VRLog.Error(e);
             }
-        }
+}
 
-        private void OnRenderModelLoaded()
+		private void OnRenderModelLoaded()
         {
             //PlaceCanvas();
         }

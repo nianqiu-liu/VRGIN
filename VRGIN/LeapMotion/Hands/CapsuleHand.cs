@@ -365,7 +365,6 @@ namespace Leap.Unity {
       mesh.SetIndices(tris.ToArray(), MeshTopology.Triangles, 0);
       mesh.RecalculateBounds();
       mesh.RecalculateNormals();
-      mesh.Optimize();
       mesh.UploadMeshData(true);
 
       return mesh;

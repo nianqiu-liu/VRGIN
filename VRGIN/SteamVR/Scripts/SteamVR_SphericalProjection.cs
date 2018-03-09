@@ -1,4 +1,4 @@
-﻿//========= Copyright 2016, Valve Corporation, All rights reserved. ===========
+﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: Applies spherical projection to output.
 //
@@ -17,7 +17,7 @@ public class SteamVR_SphericalProjection : MonoBehaviour
 		Vector3 vAxis, Vector3 vOrigin, float vScale)
 	{
 		if (material == null)
-			material = new Material(VRGIN.Helpers.UnityHelper.GetShader("Custom/SteamVR_SphericalProjection"));
+			material = new Material(Shader.Find("Custom/SteamVR_SphericalProjection"));
 
 		material.SetVector("_N", new Vector4(N.x, N.y, N.z));
 		material.SetFloat("_Phi0", phi0 * Mathf.Deg2Rad);

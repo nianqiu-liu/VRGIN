@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;UNITY_5_3</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UNITY_5_6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -26,7 +26,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;UNITY_5_3 UNITY_5_1</DefineConstants>
+    <DefineConstants>TRACE;UNITY_5_6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -43,12 +43,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
-      <HintPath>..\Libs\Unity 5.3.4\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\Libs\Unity 5.6.5\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\Libs\Unity 5.3.4\UnityEngine.UI.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\Libs\Unity 5.6.5\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="WindowsInput">
       <HintPath>..\Libs\WindowsInput.dll</HintPath>
@@ -173,6 +171,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
+    <Compile Include="SteamVR\Scripts\SteamVR_Events.cs" />
+    <Compile Include="SteamVR\Scripts\SteamVR_TrackedCamera.cs" />
     <Compile Include="Visuals\ArcRenderer.cs" />
     <Compile Include="Visuals\GUIMonitor.cs" />
     <Compile Include="Visuals\IMaterialPalette.cs" />
@@ -211,8 +211,6 @@
     <Compile Include="SteamVR\Scripts\SteamVR_Skybox.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_SphericalProjection.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_Stats.cs" />
-    <Compile Include="SteamVR\Scripts\SteamVR_Status.cs" />
-    <Compile Include="SteamVR\Scripts\SteamVR_StatusText.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_TestController.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_TrackedObject.cs" />
     <Compile Include="SteamVR\Scripts\SteamVR_UpdatePoses.cs" />

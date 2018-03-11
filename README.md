@@ -36,12 +36,12 @@ _修正前 preview fix_
 _修正後 after fix_
 
 0 vector enabledVRDevices  
-  0 Array Array (2 items)
-   0 int size = 2
-   [0]
-    1 string data = "OpenVR"
-   [1]
-    1 string data = "None"
+  0 Array Array (2 items)  
+   0 int size = 2  
+   [0]  
+    1 string data = "OpenVR"  
+   [1]  
+    1 string data = "None"  
 
 \*1)0 vector buildTags の前行まで置き換える/0 Replace the previous line of vector buildTags.  
 \*2)"Oculus"にすればOculusでも動くかもしれませんが、未確認です。/If it is "Oculus" it may work with Oculus, but it is unconfirmed.  

@@ -11,7 +11,7 @@ namespace VRGIN.Controls
         public static RightController Create()
         {
             var rightHand = new GameObject("Right Controller").AddComponent<RightController>();
-            rightHand.ToolIndex = 1; // Start with tool 2
+            //rightHand.ToolIndex = 1; // Start with tool 2
             return rightHand;
         }
     }

@@ -280,6 +280,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Data\Managed\System.Configuration.dll</TargetPath>
     </ContentWithTargetPath>
+    <Content Include="Libs\Plugins\Images\icon_school.png" />
     <Content Include="SteamVR\Textures\arrow.png" />
     <Content Include="SteamVR\Textures\background.png" />
     <Content Include="SteamVR\Textures\logo.png" />

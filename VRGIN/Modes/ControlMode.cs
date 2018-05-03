@@ -430,8 +430,10 @@ namespace VRGIN.Modes
                 //new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl+B"), delegate {
                 //    ProtectedBehaviour.DumpTable();
                 //})
-                new KeyboardShortcut(VR.Shortcuts.ApplyEffects, delegate { VR.Camera.CopyFX(VR.Camera.Blueprint); }),
-
+                new KeyboardShortcut(VR.Shortcuts.ApplyEffects, delegate {
+                    VR.Camera.CopyFX(VR.Camera.Blueprint);
+                    GameObject.Find("VRGIN_Camera (origin)/VRGIN_Camera (eye)").GetComponent<Camera>().allowHDR=true;
+                }),
             };
         }
 

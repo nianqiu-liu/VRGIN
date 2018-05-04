@@ -264,7 +264,7 @@ namespace VRGIN.Core
                     targetCamera.layerCullDistances = Blueprint.layerCullDistances;
                     targetCamera.layerCullSpherical = Blueprint.layerCullSpherical;
                     targetCamera.useOcclusionCulling = Blueprint.useOcclusionCulling;
-                    targetCamera.hdr = false;
+                    targetCamera.allowHDR = Blueprint.allowHDR;
 
                     targetCamera.backgroundColor = Blueprint.backgroundColor;
 

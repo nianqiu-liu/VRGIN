@@ -97,14 +97,14 @@ namespace VRGIN.Core
         [XmlComment("The curviness of the monitor in seated mode.")]
         public CurvinessState Projection { get { return _Projection; } set { _Projection = value; TriggerPropertyChanged("Projection"); } }
         private CurvinessState _Projection = CurvinessState.Curved;
-        
+
         /// <summary>
         /// Gets or sets whether or not speech recognition is enabled.
         /// </summary>
         [XmlComment("Whether or not speech recognition is enabled. Refer to the manual for details.")]
         public bool SpeechRecognition { get { return _SpeechRecognition; } set { _SpeechRecognition = value; TriggerPropertyChanged("SpeechRecognition"); } }
         private bool _SpeechRecognition = false;
-        
+
         /// <summary>
         /// Gets or sets which locale to use for speech recognition. A dictionary file will automatically be generated at <i>UserData/dictionaries</i>.
         /// </summary>
@@ -135,6 +135,14 @@ namespace VRGIN.Core
 
         public CaptureConfig Capture { get { return _CaptureConfig; } protected set { _CaptureConfig = value; } }
         private CaptureConfig _CaptureConfig = new CaptureConfig();
+
+        [XmlComment("Whether or not to copy image effects from the main camera.")]
+        public bool ApplyEffects { get { return _ApplyEffects; } set { _ApplyEffects = value; } }
+        private bool _ApplyEffects = true;
+
+        [XmlComment("Blacklist of effects that are to be disable (because they don't look good in VR).")]
+        public string[] EffectBlacklist { get { return _EffectBlacklist; } set { _EffectBlacklist = value; } }
+        private string[] _EffectBlacklist = { "BloomAndFlares", "DepthOfField" };
 
         public event EventHandler<PropertyChangedEventArgs> PropertyChanged = delegate { };
 

@@ -48,6 +48,7 @@ namespace VRGIN.Core
     {
         private VRGUI _Gui;
         private bool _CameraLoaded = false;
+        private bool _IsEnabledEffects = false;
 
         private static VRManager _Instance;
         public static VRManager Instance
@@ -92,6 +93,11 @@ namespace VRGIN.Core
                 if (VR.Settings.SpeechRecognition)
                 {
                     _Instance.Speech = _Instance.gameObject.AddComponent<SpeechManager>();
+                }
+
+                if (VR.Settings.ApplyEffects)
+                {
+                    _Instance.EnableEffects();
                 }
 
                 // Save settings so the XML is up-to-date
@@ -174,6 +180,7 @@ namespace VRGIN.Core
                 {
                     case CameraJudgement.MainCamera:
                         VR.Camera.Copy(camera, true);
+                        if (_IsEnabledEffects) { ApplyEffects(); }
                         break;
                     case CameraJudgement.SubCamera:
                         VR.Camera.Copy(camera, false);
@@ -194,6 +201,34 @@ namespace VRGIN.Core
         private void OnControllersCreated(object sender, EventArgs e)
         {
             ModeInitialized(this, new ModeInitializedEventArgs(Mode));
+        }
+
+        public void EnableEffects()
+        {
+            _IsEnabledEffects = true;
+            if (VR.Camera.Blueprint) { ApplyEffects(); }
+        }
+
+        public void DisableEffects()
+        {
+            _IsEnabledEffects = false;
+        }
+
+        public void ToggleEffects()
+        {
+            if (_IsEnabledEffects)
+            {
+                DisableEffects();
+            }
+            else
+            {
+                EnableEffects();
+            }
+        }
+
+        private void ApplyEffects()
+        {
+            VR.Camera.CopyFX(VR.Camera.Blueprint);
         }
     }
 }

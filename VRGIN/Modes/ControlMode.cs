@@ -413,20 +413,20 @@ namespace VRGIN.Modes
             {
                 new KeyboardShortcut(VR.Shortcuts.ShrinkWorld, delegate { VR.Settings.IPDScale += Time.deltaTime; }),
                 new KeyboardShortcut(VR.Shortcuts.EnlargeWorld, delegate { VR.Settings.IPDScale -= Time.deltaTime; }),
-                new VoiceShortcut(VoiceCommand.DecreaseScale, delegate { VR.Settings.IPDScale *= 1.2f; }), // Decrease / Increase scale of the *world* (inverse of camera scale!)
-                new VoiceShortcut(VoiceCommand.IncreaseScale, delegate { VR.Settings.IPDScale *= 0.8f; }),
+                //new VoiceShortcut(VoiceCommand.DecreaseScale, delegate { VR.Settings.IPDScale *= 1.2f; }), // Decrease / Increase scale of the *world* (inverse of camera scale!)
+                //new VoiceShortcut(VoiceCommand.IncreaseScale, delegate { VR.Settings.IPDScale *= 0.8f; }),
                 new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + D"), delegate { UnityHelper.DumpScene("dump.json"); } ),
                 new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl + I"), delegate {
                      UnityHelper.DumpScene("dump.json", true);
                 } ),
                 new MultiKeyboardShortcut(VR.Shortcuts.ToggleUserCamera, ToggleUserCamera),
                 new MultiKeyboardShortcut(VR.Shortcuts.SaveSettings, delegate { VR.Settings.Save(); }),
-                new VoiceShortcut(VoiceCommand.SaveSettings, delegate { VR.Settings.Save(); }),
+                //new VoiceShortcut(VoiceCommand.SaveSettings, delegate { VR.Settings.Save(); }),
                 new KeyboardShortcut(VR.Shortcuts.LoadSettings, delegate { VR.Settings.Reload(); }),
-                new VoiceShortcut(VoiceCommand.LoadSettings, delegate { VR.Settings.Reload(); }),
+                //new VoiceShortcut(VoiceCommand.LoadSettings, delegate { VR.Settings.Reload(); }),
                 new KeyboardShortcut(VR.Shortcuts.ResetSettings, delegate { VR.Settings.Reset(); }),
-                new VoiceShortcut(VoiceCommand.ResetSettings, delegate { VR.Settings.Reset(); }),
-                new VoiceShortcut(VoiceCommand.Impersonate, delegate { Impersonate(VR.Interpreter.Actors.FirstOrDefault()); }),
+                //new VoiceShortcut(VoiceCommand.ResetSettings, delegate { VR.Settings.Reset(); }),
+                //new VoiceShortcut(VoiceCommand.Impersonate, delegate { Impersonate(VR.Interpreter.Actors.FirstOrDefault()); }),
                 //new MultiKeyboardShortcut(new KeyStroke("Ctrl + C"), new KeyStroke("Ctrl+B"), delegate {
                 //    ProtectedBehaviour.DumpTable();
                 //})

@@ -1,4 +1,4 @@
-﻿using SpeechTransport;
+﻿/*using SpeechTransport;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -171,3 +171,4 @@ namespace VRGIN.Controls.Speech
         }
     }
 }
+*/

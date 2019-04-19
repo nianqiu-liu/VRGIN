@@ -22,7 +22,7 @@ namespace VRGIN.Core
         public static Shortcuts Shortcuts { get { return Context.Settings.Shortcuts; } }
         public static VRManager Manager { get { return VRManager.Instance; } }
         public static InputSimulator Input { get { return VRManager.Instance.Input; } }
-        public static SpeechManager Speech { get { return VRManager.Instance.Speech; } }
+        //public static SpeechManager Speech { get { return VRManager.Instance.Speech; } }
         public static HMDType HMD { get { return VRManager.Instance.HMD; } }
         public static bool Active { get; set; }
     }
@@ -65,7 +65,7 @@ namespace VRGIN.Core
 
         public IVRManagerContext Context { get; private set; }
         public GameInterpreter Interpreter { get; private set; }
-        public SpeechManager Speech { get; private set; }
+        //public SpeechManager Speech { get; private set; }
         public HMDType HMD { get; private set; }
 
         public event EventHandler<ModeInitializedEventArgs> ModeInitialized = delegate { };
@@ -90,10 +90,10 @@ namespace VRGIN.Core
                 _Instance._Gui = VRGUI.Instance;
                 _Instance.Input = new InputSimulator();
 
-                if (VR.Settings.SpeechRecognition)
-                {
-                    _Instance.Speech = _Instance.gameObject.AddComponent<SpeechManager>();
-                }
+                //if (VR.Settings.SpeechRecognition)
+                //{
+                //    _Instance.Speech = _Instance.gameObject.AddComponent<SpeechManager>();
+                //}
 
                 if (VR.Settings.ApplyEffects)
                 {

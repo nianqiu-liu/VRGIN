@@ -34,10 +34,6 @@
     <Reference Include="LeapCSharp.NET3.5">
       <HintPath>..\Libs\LeapCSharp.NET3.5.dll</HintPath>
     </Reference>
-    <Reference Include="SpeechTransport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Libs\Plugins\VR\SpeechTransport.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
@@ -255,14 +251,6 @@
     <ContentWithTargetPath Include="Libs\Data\Managed\System.Drawing.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Data\Managed\System.Drawing.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Libs\Plugins\VR\SpeechServer.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Plugins\VR\SpeechServer.exe</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Libs\Plugins\VR\SpeechTransport.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Plugins\VR\SpeechTransport.dll</TargetPath>
     </ContentWithTargetPath>
     <ContentWithTargetPath Include="Libs\Data\Managed\System.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

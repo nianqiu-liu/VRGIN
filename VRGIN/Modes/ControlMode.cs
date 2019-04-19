@@ -1,4 +1,4 @@
-﻿using Leap.Unity;
+﻿//using Leap.Unity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,11 +6,11 @@ using System.Text;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Controls;
-using VRGIN.Controls.LeapMotion;
+//using VRGIN.Controls.LeapMotion;
 using VRGIN.Controls.Speech;
 using VRGIN.Core;
 using VRGIN.Helpers;
-using VRGIN.U46.Controls.Leap;
+//using VRGIN.U46.Controls.Leap;
 using VRGIN.Visuals;
 
 namespace VRGIN.Modes
@@ -72,23 +72,23 @@ namespace VRGIN.Modes
         /// <summary>
         /// Gets the left hand.
         /// </summary>
-        public HandAttachments LeftHand { get; private set; }
+        //public HandAttachments LeftHand { get; private set; }
 
         /// <summary>
         /// Gets the left hand.
         /// </summary>
-        public HandModel LeftGraphicalHand { get; private set; }
+        //public HandModel LeftGraphicalHand { get; private set; }
 
 
         /// <summary>
         /// Gets the right hand.
         /// </summary>
-        public HandAttachments RightHand { get; private set; }
+        //public HandAttachments RightHand { get; private set; }
 
-        public HandModel RightGraphicalHand { get; private set; }
+        //public HandModel RightGraphicalHand { get; private set; }
 
 
-        public LeapServiceProvider LeapMotion { get; private set; }
+        //public LeapServiceProvider LeapMotion { get; private set; }
 
         protected IEnumerable<IShortcut> Shortcuts { get; private set; }
 
@@ -135,14 +135,14 @@ namespace VRGIN.Modes
             {
                 ControllerManager = steamCam.origin.gameObject.AddComponent<SteamVR_ControllerManager>();
 
-                if (VR.Settings.Leap)
-                {
-                    LeapMotion = CreateLeapHandController();
-                    LeapMotion.transform.name = "Leap Motion Controller (" + (++cnter) + ")";
-                    LeapMotion.transform.SetParent(steamCam.head.transform, false);
-                    LeapMotion.transform.localRotation = Quaternion.Euler(-90f, 180f, 0);
-                    LeapMotion.transform.localPosition += Vector3.forward * 0.08f;
-                }
+                //if (VR.Settings.Leap)
+                //{
+                //    LeapMotion = CreateLeapHandController();
+                //    LeapMotion.transform.name = "Leap Motion Controller (" + (++cnter) + ")";
+                //    LeapMotion.transform.SetParent(steamCam.head.transform, false);
+                //    LeapMotion.transform.localRotation = Quaternion.Euler(-90f, 180f, 0);
+                //    LeapMotion.transform.localPosition += Vector3.forward * 0.08f;
+                //}
 
                 Left = CreateLeftController();
                 Left.transform.SetParent(steamCam.origin, false);
@@ -167,7 +167,7 @@ namespace VRGIN.Modes
             ControllersCreated(this, new EventArgs());
         }
 
-        private LeapServiceProvider CreateLeapHandController()
+        /*private LeapServiceProvider CreateLeapHandController()
         {
             var serviceProvider = new GameObject("LeapHandController").AddComponent<LeapServiceProvider>();
             var handController = serviceProvider.gameObject.AddComponent<LeapHandController>();
@@ -339,7 +339,7 @@ namespace VRGIN.Modes
                 }
             };
             return hand;
-        }
+        }*/
 
         public virtual void OnDestroy()
         {
@@ -354,10 +354,10 @@ namespace VRGIN.Modes
             }
 #endif
 
-            if (LeapMotion)
-            {
-                DestroyImmediate(LeapMotion.gameObject);
-            }
+            //if (LeapMotion)
+            //{
+            //    DestroyImmediate(LeapMotion.gameObject);
+            //}
 
 
             if (Shortcuts != null)

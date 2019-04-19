@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LeapCSharp.NET3.5">
-      <HintPath>..\Libs\LeapCSharp.NET3.5.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
@@ -55,9 +52,6 @@
     <Compile Include="Controls\Handlers\BodyRumbleHandler.cs" />
     <Compile Include="Controls\Handlers\MenuHandler.cs" />
     <Compile Include="Controls\HelpText.cs" />
-    <Compile Include="Controls\LeapMotion\LeapMenuHandler.cs" />
-    <Compile Include="Controls\LeapMotion\PinchController.cs" />
-    <Compile Include="Controls\LeapMotion\WarpHandler.cs" />
     <Compile Include="Controls\LeftController.cs" />
     <Compile Include="Controls\RumbleManager.cs" />
     <Compile Include="Controls\Speech\DictionaryReader.cs" />
@@ -106,64 +100,6 @@
     <Compile Include="Helpers\QuaternionExtensions.cs" />
     <Compile Include="Helpers\SteamVRDetector.cs" />
     <Compile Include="Helpers\VRCapturePanorama.cs" />
-    <Compile Include="LeapMotion\Attachments\AttachmentController.cs" />
-    <Compile Include="LeapMotion\Attachments\CameraFollower.cs" />
-    <Compile Include="LeapMotion\Attachments\HandAttachments.cs" />
-    <Compile Include="LeapMotion\Attachments\Transition.cs" />
-    <Compile Include="LeapMotion\DetectionUtilities\Detector.cs" />
-    <Compile Include="LeapMotion\DetectionUtilities\DetectorLogicGate.cs" />
-    <Compile Include="LeapMotion\DetectionUtilities\ExtendedFingerDetector.cs" />
-    <Compile Include="LeapMotion\DetectionUtilities\FingerDirectionDetector.cs" />
-    <Compile Include="LeapMotion\DetectionUtilities\PalmDirectionDetector.cs" />
-    <Compile Include="LeapMotion\DetectionUtilities\PinchDetector.cs" />
-    <Compile Include="LeapMotion\DetectionUtilities\ProximityDetector.cs" />
-    <Compile Include="LeapMotion\HandFactory.cs" />
-    <Compile Include="LeapMotion\HandPool.cs" />
-    <Compile Include="LeapMotion\HandProxy.cs" />
-    <Compile Include="LeapMotion\HandRepresentation.cs" />
-    <Compile Include="LeapMotion\Hands\CapsuleHand.cs" />
-    <Compile Include="LeapMotion\Hands\DebugHand.cs" />
-    <Compile Include="LeapMotion\Hands\FingerModel.cs" />
-    <Compile Include="LeapMotion\Hands\HandDrop.cs" />
-    <Compile Include="LeapMotion\Hands\HandEnableDisable.cs" />
-    <Compile Include="LeapMotion\Hands\HandFader.cs" />
-    <Compile Include="LeapMotion\Hands\HandModel.cs" />
-    <Compile Include="LeapMotion\Hands\HandTransitionBehavior.cs" />
-    <Compile Include="LeapMotion\Hands\IHandModel.cs" />
-    <Compile Include="LeapMotion\Hands\MinimalHand.cs" />
-    <Compile Include="LeapMotion\Hands\PolyFinger.cs" />
-    <Compile Include="LeapMotion\Hands\PolyHand.cs" />
-    <Compile Include="LeapMotion\Hands\RiggedFinger.cs" />
-    <Compile Include="LeapMotion\Hands\RiggedHand.cs" />
-    <Compile Include="LeapMotion\Hands\RigidFinger.cs" />
-    <Compile Include="LeapMotion\Hands\RigidHand.cs" />
-    <Compile Include="LeapMotion\Hands\SkeletalFinger.cs" />
-    <Compile Include="LeapMotion\Hands\SkeletalHand.cs" />
-    <Compile Include="LeapMotion\Hands\TestHandFactory.cs" />
-    <Compile Include="LeapMotion\LeapDeviceInfo.cs" />
-    <Compile Include="LeapMotion\LeapHandController.cs" />
-    <Compile Include="LeapMotion\LeapImageRetriever.cs" />
-    <Compile Include="LeapMotion\LeapProvider.cs" />
-    <Compile Include="LeapMotion\LeapServiceProvider.cs" />
-    <Compile Include="LeapMotion\Utils\DisconnectionNotice.cs" />
-    <Compile Include="LeapMotion\Utils\EnableDepthBuffer.cs" />
-    <Compile Include="LeapMotion\Utils\ExecutionOrder.cs" />
-    <Compile Include="LeapMotion\Utils\FitHeightToScreen.cs" />
-    <Compile Include="LeapMotion\Utils\FrameRateControls.cs" />
-    <Compile Include="LeapMotion\Utils\KeyEnableBehaviors.cs" />
-    <Compile Include="LeapMotion\Utils\KeyEnableGameObjects.cs" />
-    <Compile Include="LeapMotion\Utils\LeapUnityExtensions.cs" />
-    <Compile Include="LeapMotion\Utils\SceneSettings.cs" />
-    <Compile Include="LeapMotion\Utils\SmoothedFloat.cs" />
-    <Compile Include="LeapMotion\Utils\SmoothedQuaternion.cs" />
-    <Compile Include="LeapMotion\Utils\SmoothedVector3.cs" />
-    <Compile Include="LeapMotion\Utils\StretchToScreen.cs" />
-    <Compile Include="LeapMotion\Utils\Utils.cs" />
-    <Compile Include="LeapMotion\VR\EyeType.cs" />
-    <Compile Include="LeapMotion\VR\LeapVRCameraControl.cs" />
-    <Compile Include="LeapMotion\VR\LeapVRTemporalWarping.cs" />
-    <Compile Include="LeapMotion\VR\TemporalWarpingStatus.cs" />
-    <Compile Include="LeapMotion\VR\VRHeightOffset.cs" />
     <Compile Include="Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -232,17 +168,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Plugins\Images\icon_warp.png</TargetPath>
     </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Libs\Data\Plugins\x86\LeapC.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Data\Plugins\x86\LeapC.dll</TargetPath>
-    </ContentWithTargetPath>
     <ContentWithTargetPath Include="Libs\Data\Plugins\x86\openvr_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>Data\Plugins\x86\openvr_api.dll</TargetPath>
-    </ContentWithTargetPath>
-    <ContentWithTargetPath Include="Libs\Data\Plugins\x86_64\LeapC.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Data\Plugins\x86_64\LeapC.dll</TargetPath>
     </ContentWithTargetPath>
     <ContentWithTargetPath Include="Libs\Data\Plugins\x86_64\openvr_api.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

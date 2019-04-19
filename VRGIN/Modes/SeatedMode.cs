@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using Leap;
+//using Leap;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Controls;
@@ -63,10 +63,10 @@ namespace VRGIN.Modes
         //    _Master = Camera.main.transform;
         //}
 
-        private void OnLeapConnect(object sender, ConnectionEventArgs e)
-        {
-            ChangeModeOnControllersDetected();
-        }
+        //private void OnLeapConnect(object sender, ConnectionEventArgs e)
+        //{
+        //    ChangeModeOnControllersDetected();
+        //}
 
         protected override void OnUpdate()
         {

@@ -18,18 +18,21 @@ namespace VRGIN.Visuals
         public static GUIQuad Create(IScreenGrabber source = null)
         {
             source = source ?? VR.GUI;
+
             VRLog.Info("Create GUI");
-            var gUIQuad = GameObject.CreatePrimitive(PrimitiveType.Quad).AddComponent<GUIQuad>();
-            gUIQuad.name = "GUIQuad";
-            if (source != VR.GUI)
+            var gui = GameObject.CreatePrimitive(PrimitiveType.Quad).AddComponent<GUIQuad>();
+            gui.name = "GUIQuad";
+            gui.gameObject.AddComponent<Rigidbody>().isKinematic = true;
+            
+            if(source != VR.GUI)
             {
-                gUIQuad.gameObject.SetActive(false);
-                gUIQuad._Source = source;
-                gUIQuad.gameObject.SetActive(true);
+                gui.gameObject.SetActive(false);
+                gui._Source = source;
+                gui.gameObject.SetActive(true);
             }
 
-            gUIQuad.UpdateGUI();
-            return gUIQuad;
+            gui.UpdateGUI();
+            return gui;
         }
 
         protected override void OnAwake()

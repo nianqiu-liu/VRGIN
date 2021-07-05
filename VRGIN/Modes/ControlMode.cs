@@ -47,16 +47,21 @@ namespace VRGIN.Modes
             MoveToPosition(targetPosition, VR.Camera.SteamCam.head.rotation, ignoreHeight);
         }
 
-        public virtual void MoveToPosition(Vector3 targetPosition, Quaternion rotation = default, bool ignoreHeight = true)
+        public virtual void MoveToPosition(Vector3 targetPosition, Quaternion rotation = default(Quaternion), bool ignoreHeight = true)
         {
-            var forwardVector = Calculator.GetForwardVector(rotation);
-            var forwardVector2 = Calculator.GetForwardVector(VR.Camera.SteamCam.head.rotation);
-            VR.Camera.SteamCam.origin.rotation *= Quaternion.FromToRotation(forwardVector2, forwardVector);
-            var y = ignoreHeight ? 0f : targetPosition.y;
-            var y2 = ignoreHeight ? 0f : VR.Camera.SteamCam.head.position.y;
-            targetPosition = new Vector3(targetPosition.x, y, targetPosition.z);
-            var vector = new Vector3(VR.Camera.SteamCam.head.position.x, y2, VR.Camera.SteamCam.head.position.z);
-            VR.Camera.SteamCam.origin.position += targetPosition - vector;
+            var levelRotation = MakeUpright(rotation) * Quaternion.Inverse(MakeUpright(VR.Camera.SteamCam.head.rotation));
+            VR.Camera.SteamCam.origin.rotation = levelRotation * VR.Camera.SteamCam.origin.rotation;
+
+            float targetY = ignoreHeight ? 0 : targetPosition.y;
+            float myY = ignoreHeight ? 0 : VR.Camera.SteamCam.head.position.y;
+            targetPosition = new Vector3(targetPosition.x, targetY, targetPosition.z);
+            var myPosition = new Vector3(VR.Camera.SteamCam.head.position.x, myY, VR.Camera.SteamCam.head.position.z);
+            VR.Camera.SteamCam.origin.position += (targetPosition - myPosition);
+        }
+
+        private static Quaternion MakeUpright(Quaternion rotation)
+        {
+            return Quaternion.Euler(0, rotation.eulerAngles.y, 0);
         }
 
         protected override void OnStart()
@@ -111,9 +116,15 @@ namespace VRGIN.Modes
 
         protected virtual void InitializeTools(Controller controller, bool isLeft)
         {
-            var enumerable = Tools.Concat(isLeft ? LeftTools : RightTools).Distinct();
-            foreach (var item in enumerable) controller.AddTool(item);
-            VRLog.Info("{0} tools added", enumerable.Count());
+            // Combine
+            var toolTypes = Tools.Concat(isLeft ? LeftTools : RightTools).Distinct();
+
+            foreach (var type in toolTypes)
+            {
+                controller.AddTool(type);
+            }
+
+            VRLog.Info("{0} tools added", toolTypes.Count());
         }
 
         protected virtual Controller CreateLeftController()
@@ -162,25 +173,41 @@ namespace VRGIN.Modes
         {
             base.OnUpdate();
             OpenVR.Compositor.SetTrackingSpace(TrackingOrigin);
+
+            // Update head visibility
+
             var steamCam = VRCamera.Instance.SteamCam;
-            var num = 0;
-            var isEveryoneHeaded = VR.Interpreter.IsEveryoneHeaded;
+            int i = 0;
+
+            bool allActorsHaveHeads = VR.Interpreter.IsEveryoneHeaded;
+
             foreach (var actor in VR.Interpreter.Actors)
             {
                 if (actor.HasHead)
                 {
-                    if (isEveryoneHeaded)
+                    if (allActorsHaveHeads)
                     {
-                        var position = actor.Eyes.position;
-                        var forward = actor.Eyes.forward;
-                        var position2 = steamCam.head.position;
-                        var forward2 = steamCam.head.forward;
-                        if (Vector3.Distance(position, position2) * VR.Context.UnitToMeter < 0.15f && Vector3.Dot(forward, forward2) > 0.6f) actor.HasHead = false;
+                        var hisPos = actor.Eyes.position;
+                        var hisForward = actor.Eyes.forward;
+
+                        var myPos = steamCam.head.position;
+                        var myForward = steamCam.head.forward;
+
+                        VRLog.Debug("Actor #{0} -- He: {1} -> {2} | Me: {3} -> {4}", i, hisPos, hisForward, myPos, myForward);
+                        if (Vector3.Distance(hisPos, myPos) * VR.Context.UnitToMeter <  0.15f && Vector3.Dot(hisForward, myForward) > 0.6f)
+                        {
+                            actor.HasHead = false;
+                        }
                     }
                 }
-                else if (Vector3.Distance(actor.Eyes.position, steamCam.head.position) * VR.Context.UnitToMeter > 0.3f) actor.HasHead = true;
-
-                num++;
+                else
+                {
+                    if (Vector3.Distance(actor.Eyes.position, steamCam.head.position) * VR.Context.UnitToMeter > 0.3f)
+                    {
+                        actor.HasHead = true;
+                    }
+                }
+                i++;
             }
 
             CheckInput();

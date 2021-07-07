@@ -95,7 +95,7 @@ namespace VRGIN.Core
         public void Copy(Camera blueprint, bool master = false, bool hasOtherConsumers = false)
         {
             VRLog.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
-            if ((bool)blueprint && (bool)blueprint.GetComponent<CameraSlave>())
+            if(blueprint && (bool)blueprint.GetComponent<CameraSlave>())
             {
                 VRLog.Warn("Is already slave -- NOOP");
                 return;
@@ -107,7 +107,7 @@ namespace VRGIN.Core
                 ApplyToCameras(delegate(Camera targetCamera)
                 {
                     targetCamera.nearClipPlane = VR.Context.NearClipPlane;
-                    targetCamera.farClipPlane = Mathf.Max(Blueprint.farClipPlane, 10f);
+                    targetCamera.farClipPlane = Mathf.Max(Blueprint.farClipPlane, MIN_FAR_CLIP_PLANE);
                     targetCamera.clearFlags = Blueprint.clearFlags == CameraClearFlags.Skybox ? CameraClearFlags.Skybox : CameraClearFlags.Color;
                     targetCamera.renderingPath = Blueprint.renderingPath;
                     targetCamera.clearStencilAfterLightingPass = Blueprint.clearStencilAfterLightingPass;
@@ -127,11 +127,15 @@ namespace VRGIN.Core
                 });
             }
 
-            if ((bool)blueprint)
+            if(blueprint)
             {
                 blueprint.gameObject.AddComponent<CameraSlave>();
                 var component = blueprint.GetComponent<AudioListener>();
-                if ((bool)component) Destroy(component);
+                if(component) Destroy(component);
+
+                // Prevent Unity from moving this camera around.
+                blueprint.stereoTargetEye = StereoTargetEyeMask.None;
+
                 if (!hasOtherConsumers && blueprint.targetTexture == null && VR.Interpreter.IsIrrelevantCamera(blueprint)) blueprint.gameObject.AddComponent<CameraKiller>();
             }
 
@@ -141,7 +145,7 @@ namespace VRGIN.Core
 
         private bool UseNewCamera(Camera blueprint)
         {
-            if ((bool)_Blueprint && _Blueprint != _Camera && _Blueprint != blueprint && _Blueprint.name == "Main Camera")
+            if(_Blueprint && _Blueprint != _Camera && _Blueprint != blueprint && _Blueprint.name == "Main Camera")
             {
                 VRLog.Info("Using {0} over {1} as main camera", _Blueprint.name, blueprint.name);
                 return false;
@@ -184,7 +188,7 @@ namespace VRGIN.Core
                 {
                     VRLog.Info("Copy FX: {0} (enabled={1})", cameraEffect2.GetType().Name, cameraEffect2.enabled);
                     var monoBehaviour = target.CopyComponentFrom(cameraEffect2);
-                    if ((bool)monoBehaviour) VRLog.Info("Attached!");
+                    if(monoBehaviour) VRLog.Info("Attached!");
                     monoBehaviour.enabled = cameraEffect2.enabled;
                 }
                 else
@@ -204,7 +208,7 @@ namespace VRGIN.Core
         protected override void OnUpdate()
         {
             base.OnUpdate();
-            if ((bool)SteamCam.origin) SteamCam.origin.localScale = Vector3.one * VR.Settings.IPDScale;
+            if(SteamCam.origin) SteamCam.origin.localScale = Vector3.one * VR.Settings.IPDScale;
         }
 
         public void Refresh()

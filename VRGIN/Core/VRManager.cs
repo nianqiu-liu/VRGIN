@@ -126,6 +126,11 @@ namespace VRGIN.Core
             }
         }
 
+        private void OnApplicationQuit()
+        {
+            VR.Quitting = true;
+        }
+
         private void OnControllersCreated(object sender, EventArgs e)
         {
             ModeInitialized(this, new ModeInitializedEventArgs(Mode));

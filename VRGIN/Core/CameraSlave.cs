@@ -67,6 +67,10 @@ namespace VRGIN.Core
 
         public void OnDisable()
         {
+            if (VR.Quitting)
+            {
+                return;
+            }
             try
             {
                 VR.Camera.UnregisterSlave(this);

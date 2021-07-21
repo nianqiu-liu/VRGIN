@@ -71,6 +71,10 @@ namespace VRGIN.Controls.Tools
 
         protected override void OnDestroy()
         {
+            if (VR.Quitting)
+            {
+                return;
+            }
             DestroyImmediate(Gui.gameObject);
         }
 

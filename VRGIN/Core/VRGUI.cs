@@ -226,9 +226,8 @@ namespace VRGIN.Core
             if (_Listeners < 0) VRLog.Warn("Numbers don't add up!");
         }
 
-        protected override void OnLevel(int level)
+        private void OnLevelWasLoaded(int level)
         {
-            base.OnLevel(level);
             _CheckedCameras.Clear();
             _CameraMappings.Clear();
         }

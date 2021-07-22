@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using UnityEngine;
 using VRGIN.Core;
 using VRGIN.Helpers;
@@ -19,10 +23,17 @@ namespace VRGIN.Controls.Handlers
             _Rumble = new VelocityRumble(_Controller.Tracking, 30, 10f, 3f, 1500, 10f);
         }
 
-        protected override void OnLevel(int level)
+        private void OnLevelWasLoaded(int level)
         {
-            base.OnLevel(level);
-            OnStop();
+            try
+            {
+                OnStop();
+            }
+            catch(Exception ex)
+            {
+                VRLog.Error(ex);
+            }
+
         }
 
         protected void OnDisable()

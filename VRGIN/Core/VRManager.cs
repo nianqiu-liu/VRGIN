@@ -94,7 +94,7 @@ namespace VRGIN.Core
 
         protected override void OnStart() { }
 
-        protected override void OnLevel(int level)
+        private void OnLevelWasLoaded(int level)
         {
             _CheckedCameras.Clear();
         }

@@ -25,7 +25,6 @@ namespace VRGIN.Core
         protected void Awake()
         {
             SafelyCall(OnAwake);
-            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         protected void Update()
@@ -43,16 +42,6 @@ namespace VRGIN.Core
             SafelyCall(OnFixedUpdate);
         }
 
-        protected void OnLevelWasLoaded(int level)
-        {
-            SafelyCall(delegate { OnLevel(level); });
-        }
-
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            if (mode == LoadSceneMode.Single) OnLevelWasLoaded(scene.buildIndex);
-        }
-
         protected virtual void OnStart() { }
 
         protected virtual void OnUpdate() { }
@@ -62,8 +51,6 @@ namespace VRGIN.Core
         protected virtual void OnFixedUpdate() { }
 
         protected virtual void OnAwake() { }
-
-        protected virtual void OnLevel(int level) { }
 
         private void SafelyCall(Action action)
         {

@@ -333,7 +333,6 @@
     <Compile Include="VRGIN\Core\VR.cs" />
     <Compile Include="VRGIN\Core\VRCamera.cs" />
     <Compile Include="VRGIN\Core\VRGUI.cs" />
-    <Compile Include="VRGIN\Core\VRLog.cs" />
     <Compile Include="VRGIN\Core\VRManager.cs" />
     <Compile Include="VRGIN\Core\VRSettings.cs" />
     <Compile Include="VRGIN\Core\WhitelistThrottler.cs" />

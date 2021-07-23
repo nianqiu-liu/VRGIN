@@ -62,6 +62,7 @@ namespace VRGIN.Controls.Tools
             Gui.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
             Gui.IsOwned = true;
             DontDestroyOnLoad(Gui.gameObject);
+            Gui.gameObject.SetActive(enabled);
         }
 
         protected override void OnStart()

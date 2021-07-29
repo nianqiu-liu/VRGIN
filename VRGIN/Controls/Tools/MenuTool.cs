@@ -82,9 +82,18 @@ namespace VRGIN.Controls.Tools
         protected override void OnDisable()
         {
             base.OnDisable();
-            if ((bool)Gui) Gui.gameObject.SetActive(false);
-        }
 
+            if (Gui)
+            {
+                Gui.gameObject.SetActive(false);
+            }
+
+            if (pressDownTime != 0)
+            {
+                pressDownTime = 0;
+                VR.Input.Mouse.LeftButtonUp();
+            }
+        }
         protected override void OnEnable()
         {
             base.OnEnable();

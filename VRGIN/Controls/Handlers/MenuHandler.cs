@@ -306,15 +306,15 @@ namespace VRGIN.Controls.Handlers
                                 break;
                         }
                     }
-
+                    
+                    if (input.GetPressDown(EVRButtonId.k_EButton_Grip) && !_Target.IsOwned)
+                    {
+                        _Target.transform.SetParent(_Controller.transform, true);
+                        _Target.IsOwned = true;
+                    }
                     if (input.GetPressUp(EVRButtonId.k_EButton_Grip))
                     {
-                        var menuTool = _Controller.GetComponent<MenuTool>();
-                        if (menuTool && !menuTool.Gui)
-                        {
-                            menuTool.TakeGUI(_Target);
-                            _Controller.ToolIndex = _Controller.Tools.IndexOf(menuTool);
-                        }
+                        AbandonGUI();
                     }
                 }
             }
@@ -404,6 +404,7 @@ namespace VRGIN.Controls.Handlers
 
         private void ClearPresses()
         {
+            AbandonGUI();
             if ((_PressedButtons & Buttons.Left) != 0)
             {
                 VR.Input.Mouse.LeftButtonUp();
@@ -417,6 +418,15 @@ namespace VRGIN.Controls.Handlers
                 VR.Input.Mouse.MiddleButtonUp();
             }
             _PressedButtons = 0;
+        }
+
+        private void AbandonGUI()
+        {
+            if (_Target && _Target.transform.parent == _Controller.transform)
+            {
+                _Target.transform.SetParent(VR.Camera.Origin, true);
+                _Target.IsOwned = false;
+            }
         }
 
         private bool IsOtherWorkingOn(GUIQuad target)

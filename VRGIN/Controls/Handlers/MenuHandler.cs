@@ -103,6 +103,15 @@ namespace VRGIN.Controls.Handlers
         private ResizeHandler _ResizeHandler;
 
         private Vector3 _ScaleVector;
+        private Buttons _PressedButtons;
+        private Controller.TrackpadDirection _LastDirection;
+
+        enum Buttons
+        {
+            Left = 1,
+            Right = 2,
+            Middle = 4,
+        }
 
         private bool IsResizing
         {
@@ -141,7 +150,7 @@ namespace VRGIN.Controls.Handlers
             }
         }
 
-        public bool IsPressing { get; private set; }
+        public bool IsPressing => _PressedButtons != 0;
 
         protected override void OnAwake()
         {
@@ -231,36 +240,82 @@ namespace VRGIN.Controls.Handlers
 
         protected void CheckInput()
         {
-            IsPressing = false;
             var input = _Controller.Input;
-            if (!LaserVisible || !_Target) return;
-            if (_Other.LaserVisible && _Other._Target == _Target)
-                EnsureResizeHandler();
-            else
-                EnsureNoResizeHandler();
-            if (IsResizing) return;
-            if (input.GetPressDown(EVRButtonId.k_EButton_Axis1))
+            if (LaserVisible && _Target)
             {
-                IsPressing = true;
-                VR.Input.Mouse.LeftButtonDown();
-                mouseDownPosition = Vector2.Scale(new Vector2(Input.mousePosition.x, (float)Screen.height - Input.mousePosition.y), _ScaleVector);
-            }
-
-            if (input.GetPress(EVRButtonId.k_EButton_Axis1)) IsPressing = true;
-            if (input.GetPressUp(EVRButtonId.k_EButton_Axis1))
-            {
-                IsPressing = true;
-                VR.Input.Mouse.LeftButtonUp();
-                mouseDownPosition = null;
-            }
-
-            if (input.GetPressUp(EVRButtonId.k_EButton_Grip))
-            {
-                var component = _Controller.GetComponent<MenuTool>();
-                if ((bool)component && !component.Gui)
+                if (_Other.LaserVisible && _Other._Target == _Target)
                 {
-                    component.TakeGUI(_Target);
-                    _Controller.ToolIndex = _Controller.Tools.IndexOf(component);
+                    // No double input - this is handled by ResizeHandler
+                    EnsureResizeHandler();
+                }
+                else
+                {
+                    EnsureNoResizeHandler();
+                }
+
+                if (!IsResizing)
+                {
+                    if (input.GetPressDown(EVRButtonId.k_EButton_SteamVR_Trigger))
+                    {
+                        VR.Input.Mouse.LeftButtonDown();
+                        _PressedButtons |= Buttons.Left;
+                        mouseDownPosition = Vector2.Scale(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y), _ScaleVector);
+                    }
+                    if (input.GetPressUp(EVRButtonId.k_EButton_SteamVR_Trigger))
+                    {
+                        _PressedButtons &= ~Buttons.Left;
+                        VR.Input.Mouse.LeftButtonUp();
+                        mouseDownPosition = null;
+                    }
+                    if (input.GetPressDown(EVRButtonId.k_EButton_SteamVR_Touchpad))
+                    {
+                        _LastDirection = _Controller.GetTrackpadDirection();
+                        switch (_LastDirection)
+                        {
+                            case Controller.TrackpadDirection.Right:
+                                VR.Input.Mouse.RightButtonDown();
+                                _PressedButtons |= Buttons.Right;
+                                break;
+                            case Controller.TrackpadDirection.Center:
+                                VR.Input.Mouse.MiddleButtonDown();
+                                _PressedButtons |= Buttons.Middle;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    if (input.GetPressUp(EVRButtonId.k_EButton_SteamVR_Touchpad))
+                    {
+                        switch (_LastDirection)
+                        {
+                            case Controller.TrackpadDirection.Right:
+                                VR.Input.Mouse.RightButtonUp();
+                                _PressedButtons &= ~Buttons.Right;
+                                break;
+                            case Controller.TrackpadDirection.Center:
+                                VR.Input.Mouse.MiddleButtonUp();
+                                _PressedButtons &= ~Buttons.Middle;
+                                break;
+                            case Controller.TrackpadDirection.Up:
+                                VR.Input.Mouse.VerticalScroll(1);
+                                break;
+                            case Controller.TrackpadDirection.Down:
+                                VR.Input.Mouse.VerticalScroll(-1);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    if (input.GetPressUp(EVRButtonId.k_EButton_Grip))
+                    {
+                        var menuTool = _Controller.GetComponent<MenuTool>();
+                        if (menuTool && !menuTool.Gui)
+                        {
+                            menuTool.TakeGUI(_Target);
+                            _Controller.ToolIndex = _Controller.Tools.IndexOf(menuTool);
+                        }
+                    }
                 }
             }
         }
@@ -315,26 +370,53 @@ namespace VRGIN.Controls.Handlers
         {
             Laser.SetPosition(0, Laser.transform.position);
             Laser.SetPosition(1, Laser.transform.position + Laser.transform.forward);
-            if ((bool)_Target && _Target.gameObject.activeInHierarchy)
+
+            if (_Target && _Target.gameObject.activeInHierarchy)
             {
                 if (IsWithinRange(_Target) && Raycast(_Target, out var hit))
                 {
                     Laser.SetPosition(1, hit.point);
                     if (!IsOtherWorkingOn(_Target))
                     {
-                        var b = new Vector2(hit.textureCoord.x * (float)VRGUI.Width, (1f - hit.textureCoord.y) * (float)VRGUI.Height);
-                        if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, b) > 30f)
+                        var newPos = new Vector2(hit.textureCoord.x * VRGUI.Width, (1 - hit.textureCoord.y) * VRGUI.Height);
+                        //VRLog.Info("New Pos: {0}, textureCoord: {1}", newPos, hit.textureCoord);
+                        if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, newPos) > MOUSE_STABILIZER_THRESHOLD)
                         {
-                            MouseOperations.SetClientCursorPosition((int)b.x, (int)b.y);
+                            MouseOperations.SetClientCursorPosition((int)newPos.x, (int)newPos.y);
                             mouseDownPosition = null;
                         }
                     }
                 }
                 else
+                {
+                    // Out of view
                     LaserVisible = false;
+                    ClearPresses();
+                }
             }
             else
+            {
+                // May day, may day -- window is gone!
                 LaserVisible = false;
+                ClearPresses();
+            }
+        }
+
+        private void ClearPresses()
+        {
+            if ((_PressedButtons & Buttons.Left) != 0)
+            {
+                VR.Input.Mouse.LeftButtonUp();
+            }
+            if ((_PressedButtons & Buttons.Right) != 0)
+            {
+                VR.Input.Mouse.RightButtonUp();
+            }
+            if ((_PressedButtons & Buttons.Middle) != 0)
+            {
+                VR.Input.Mouse.MiddleButtonUp();
+            }
+            _PressedButtons = 0;
         }
 
         private bool IsOtherWorkingOn(GUIQuad target)

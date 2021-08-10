@@ -87,9 +87,11 @@ namespace VRGIN.U46.Visuals
 
         protected virtual Transform CreateClone()
         {
-            var hMDLoader = new GameObject("Model").AddComponent<HMDLoader>();
-            hMDLoader.NewParent = PlayArea.transform;
-            return hMDLoader.transform;
+            var model = new GameObject("Model").AddComponent<HMDLoader>();
+            model.NewParent = PlayArea.transform;
+            DontDestroyOnLoad(model.gameObject);
+
+            return model.transform;
         }
 
         internal static PlayAreaVisualization Create(PlayArea playArea = null)

@@ -1,57 +1,43 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using static VRGIN.Native.WindowsInterop;
-
 namespace VRGIN.Native
 {
-    public class MouseOperations
-    {
+	public class MouseOperations
+	{
+		public static void SetCursorPosition(int X, int Y)
+		{
+			WindowsInterop.SetCursorPos(X, Y);
+		}
 
-        public static void SetCursorPosition(int X, int Y)
-        {
-            SetCursorPos(X, Y);
-        }
+		public static void SetClientCursorPosition(int x, int y)
+		{
+			WindowsInterop.RECT clientRect = WindowManager.GetClientRect();
+			WindowsInterop.SetCursorPos(x + clientRect.Left, y + clientRect.Top);
+		}
 
-        public static void SetClientCursorPosition(int x, int y)
-        {
-            var clientRect = WindowManager.GetClientRect();
-            SetCursorPos(x + clientRect.Left, y + clientRect.Top);
-        }
+		public static WindowsInterop.POINT GetClientCursorPosition()
+		{
+			WindowsInterop.POINT cursorPosition = GetCursorPosition();
+			WindowsInterop.RECT clientRect = WindowManager.GetClientRect();
+			return new WindowsInterop.POINT(cursorPosition.X - clientRect.Left, cursorPosition.Y - clientRect.Top);
+		}
 
-        public static POINT GetClientCursorPosition()
-        {
-            var pos = GetCursorPosition();
-            var clientRect = WindowManager.GetClientRect();
+		public static void SetCursorPosition(WindowsInterop.POINT point)
+		{
+			WindowsInterop.SetCursorPos(point.X, point.Y);
+		}
 
-            return new POINT(pos.X - clientRect.Left, pos.Y - clientRect.Top);
-        }
+		public static WindowsInterop.POINT GetCursorPosition()
+		{
+			if (!WindowsInterop.GetCursorPos(out var lpMousePoint))
+			{
+				lpMousePoint = new WindowsInterop.POINT(0, 0);
+			}
+			return lpMousePoint;
+		}
 
-        public static void SetCursorPosition(POINT point)
-        {
-            SetCursorPos(point.X, point.Y);
-        }
-
-        public static POINT GetCursorPosition()
-        {
-            POINT currentMousePoint;
-            var gotPoint = GetCursorPos(out currentMousePoint);
-            if (!gotPoint) { currentMousePoint = new POINT(0, 0); }
-            return currentMousePoint;
-        }
-
-
-        public static void MouseEvent(MouseEventFlags value)
-        {
-            POINT position = GetCursorPosition();
-
-            mouse_event
-                ((int)value,
-                 position.X,
-                 position.Y,
-                 0,
-                 0)
-                ;
-        }
-
-    }
+		public static void MouseEvent(WindowsInterop.MouseEventFlags value)
+		{
+			WindowsInterop.POINT cursorPosition = GetCursorPosition();
+			WindowsInterop.mouse_event((int)value, cursorPosition.X, cursorPosition.Y, 0, 0);
+		}
+	}
 }

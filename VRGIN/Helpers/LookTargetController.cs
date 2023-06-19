@@ -1,65 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using VRGIN.Core;
 
 namespace VRGIN.Helpers
 {
-    /**
-    * Manages the eye target for a single actor.
-    */
-    public class LookTargetController : ProtectedBehaviour
-    {
-        /// <summary>
-        /// Gets the target for the gaze.
-        /// </summary>
-        public Transform Target { get; private set; }
+	public class LookTargetController : ProtectedBehaviour
+	{
+		private Transform _RootNode;
 
-        private Transform _RootNode;
+		public float Offset = 0.5f;
 
-        /// <summary>
-        /// Gets or sets the offset in meters from the camera (shifts the eye focus)
-        /// </summary>
-        public float Offset = 0.5f;
+		public Transform Target { get; private set; }
 
-        public static LookTargetController AttachTo(IActor actor, GameObject gameObject)
-        {
-            var controller = gameObject.AddComponent<LookTargetController>();
-            controller._RootNode = actor.Eyes;
+		public static LookTargetController AttachTo(IActor actor, GameObject gameObject)
+		{
+			LookTargetController lookTargetController = gameObject.AddComponent<LookTargetController>();
+			lookTargetController._RootNode = actor.Eyes;
+			return lookTargetController;
+		}
 
-            return controller;
-        }
+		protected override void OnAwake()
+		{
+			base.OnAwake();
+			CreateTarget();
+		}
 
-        protected override void OnAwake()
-        {
-            base.OnAwake();
-            CreateTarget();
-        }
+		private void CreateTarget()
+		{
+			Target = new GameObject("VRGIN_LookTarget").transform;
+			Object.DontDestroyOnLoad(Target.gameObject);
+		}
 
-        private void CreateTarget()
-        {
-            Target = new GameObject("VRGIN_LookTarget").transform;
-            DontDestroyOnLoad(Target.gameObject);
-        }
+		protected override void OnUpdate()
+		{
+			base.OnUpdate();
+			if ((bool)_RootNode && (bool)VR.Camera.SteamCam.head.transform)
+			{
+				Transform transform = VR.Camera.SteamCam.head.transform;
+				Vector3 normalized = (transform.position - _RootNode.position).normalized;
+				Target.transform.position = transform.position + normalized * Offset;
+			}
+		}
 
-        protected override void OnUpdate()
-        {
-            base.OnUpdate();
-            if (_RootNode && VR.Camera.SteamCam.head.transform)
-            {
-                var camera = VR.Camera.SteamCam.head.transform;
-                var dir = (camera.position - _RootNode.position).normalized;
-
-                Target.transform.position = camera.position + dir * Offset;
-            }
-        }
-
-        void OnDestroy()
-        {
-            // Character was destroyed, so destroy the created target!
-            Destroy(Target.gameObject);
-        }
-    }
+		private void OnDestroy()
+		{
+			Object.Destroy(Target.gameObject);
+		}
+	}
 }

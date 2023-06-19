@@ -1,0 +1,435 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectGuid>{4B6E4305-C95A-4274-94A6-B04A1B01989D}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <LangVersion>8.0</LangVersion>
+    <AssemblyName>VRGIN_OpenXR</AssemblyName>
+    <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Sirenix.Serialization, Version=2.1.13.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.2019.4.9\lib\net46\Sirenix.Serialization.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Unity.Subsystem.Registration">
+      <HintPath>Libs\Unity.Subsystem.Registration.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.XR.Management">
+      <HintPath>Libs\Unity.XR.Management.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Unity.XR.OpenVR">
+      <HintPath>Libs\Unity.XR.OpenVR.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.2019.4.9\lib\net46\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.2019.4.9\lib\net46\UnityEngine.AssetBundleModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.2019.4.9\lib\net46\UnityEngine.AudioModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.2019.4.9\lib\net46\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.2019.4.9\lib\net46\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.2019.4.9\lib\net46\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.2019.4.9\lib\net46\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.2019.4.9\lib\net46\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.SpatialTracking">
+      <HintPath>Libs\UnityEngine.SpatialTracking.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.2019.4.9\lib\net46\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.2019.4.9\lib\net46\UnityEngine.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.2019.4.9\lib\net46\UnityEngine.UIModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.2019.4.9\lib\net46\UnityEngine.UnityWebRequestModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.2019.4.9\lib\net46\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.2019.4.9\lib\net46\UnityEngine.VRModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.XR.LegacyInputHelpers">
+      <HintPath>Libs\UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.2019.4.9\lib\net46\UnityEngine.XRModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Valve.Newtonsoft.Json">
+      <HintPath>Libs\Valve.Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="WindowsInput">
+      <HintPath>Libs\WindowsInput.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CapturePanorama\CapturePanorama.cs" />
+    <Compile Include="CapturePanorama\Icosphere.cs" />
+    <Compile Include="CapturePanorama\Internals\ImageEffectCopyCamera.cs" />
+    <Compile Include="CapturePanorama\Internals\ScreenFadeControl.cs" />
+    <Compile Include="CapturePanorama\ReadPanoConfig.cs" />
+    <Compile Include="Nop_Action_Boolean.cs" />
+    <Compile Include="Nop_Action_Vector2.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SteamVR_Utils.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action.cs" />
+    <Compile Include="Valve\VR\ISteamVR_ActionSet.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Boolean.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_In.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_In_Source.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Out.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Out_Source.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Pose.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Single.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Skeleton_Source.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Source.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Vector2.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Vector3.cs" />
+    <Compile Include="Valve\VR\ISteamVR_Action_Vibration.cs" />
+    <Compile Include="Valve\VR\SkeletalMotionRangeChange.cs" />
+    <Compile Include="Valve\VR\SteamVR.cs" />
+    <Compile Include="Valve\VR\SteamVREnumEqualityComparer.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action.cs" />
+    <Compile Include="Valve\VR\SteamVR_ActionDirections.cs" />
+    <Compile Include="Valve\VR\SteamVR_Actions.cs" />
+    <Compile Include="Valve\VR\SteamVR_ActionSet.cs" />
+    <Compile Include="Valve\VR\SteamVR_ActionSet_Data.cs" />
+    <Compile Include="Valve\VR\SteamVR_ActionSet_Manager.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Boolean.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Boolean_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Boolean_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_In.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_In_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_In_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Out.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Out_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Pose.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Pose_Base.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Pose_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Pose_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Single.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Single_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Single_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Skeleton.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Skeleton_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Skeleton_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vector2.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vector2_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vector2_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vector3.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vector3_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vector3_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vibration.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vibration_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Action_Vibration_Source_Map.cs" />
+    <Compile Include="Valve\VR\SteamVR_ActivateActionSetOnLoad.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Boolean.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_BooleanEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Pose.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_PoseEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Pose_ConnectedChangedEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Pose_DeviceIndexChangedEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Pose_TrackingChangedEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Single.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_SingleEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Skeleton.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_SkeletonCustom.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_SkeletonEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Skeleton_ConnectedChangedEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Skeleton_TrackingChangedEvent.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Vector2.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Vector2Event.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Vector3.cs" />
+    <Compile Include="Valve\VR\SteamVR_Behaviour_Vector3Event.cs" />
+    <Compile Include="Valve\VR\SteamVR_Camera.cs" />
+    <Compile Include="Valve\VR\SteamVR_CameraFlip.cs" />
+    <Compile Include="Valve\VR\SteamVR_CameraMask.cs" />
+    <Compile Include="Valve\VR\SteamVR_Ears.cs" />
+    <Compile Include="Valve\VR\SteamVR_Events.cs" />
+    <Compile Include="Valve\VR\SteamVR_ExternalCamera.cs" />
+    <Compile Include="Valve\VR\SteamVR_ExternalCamera_LegacyManager.cs" />
+    <Compile Include="Valve\VR\SteamVR_Fade.cs" />
+    <Compile Include="Valve\VR\SteamVR_Frustum.cs" />
+    <Compile Include="Valve\VR\SteamVR_HistoryBuffer.cs" />
+    <Compile Include="Valve\VR\SteamVR_HistoryStep.cs" />
+    <Compile Include="Valve\VR\SteamVR_IK.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile_Action.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile_ActionSet.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile_ActionSet_Usages.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile_ActionTypes.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile_Action_Requirements.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile_DefaultBinding.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile_DefaultBinding_ControllerTypes.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionFile_LocalizationItem.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionScopes.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionSetUsages.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ActionSet_legacy_emulate.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile_ActionList.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile_Chord.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile_Haptic.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile_Pose.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile_Skeleton.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile_Source_Input.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_BindingFile_Source_Input_StringDictionary.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_Generator_Names.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ManifestFile.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ManifestFile_Application.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ManifestFile_ApplicationString.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ManifestFile_Application_Binding.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_ManifestFile_Application_Binding_ControllerTypes.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_Source.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_Sources.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_Sources_Comparer.cs" />
+    <Compile Include="Valve\VR\SteamVR_Input_Unity_AssemblyFile_Definition.cs" />
+    <Compile Include="Valve\VR\SteamVR_LoadLevel.cs" />
+    <Compile Include="Valve\VR\SteamVR_Menu.cs" />
+    <Compile Include="Valve\VR\SteamVR_Overlay.cs" />
+    <Compile Include="Valve\VR\SteamVR_PlayArea.cs" />
+    <Compile Include="Valve\VR\SteamVR_Render.cs" />
+    <Compile Include="Valve\VR\SteamVR_RenderModel.cs" />
+    <Compile Include="Valve\VR\SteamVR_RingBuffer.cs" />
+    <Compile Include="Valve\VR\SteamVR_Settings.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_FingerExtensionTypeLists.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_FingerExtensionTypes.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_FingerIndexEnum.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_FingerIndexes.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_FingerSplayIndexEnum.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_FingerSplayIndexes.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_HandMask.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_JointIndexEnum.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_JointIndexes.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_Pose.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_Poser.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_PoseSnapshot.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skeleton_Pose_Hand.cs" />
+    <Compile Include="Valve\VR\SteamVR_Skybox.cs" />
+    <Compile Include="Valve\VR\SteamVR_SphericalProjection.cs" />
+    <Compile Include="Valve\VR\SteamVR_TrackedCamera.cs" />
+    <Compile Include="Valve\VR\SteamVR_TrackedObject.cs" />
+    <Compile Include="Valve\VR\SteamVR_TrackingReferenceManager.cs" />
+    <Compile Include="Valve\VR\SteamVR_UpdateModes.cs" />
+    <Compile Include="VRGIN\Controls\ButtonMask.cs" />
+    <Compile Include="VRGIN\Controls\Controller.cs" />
+    <Compile Include="VRGIN\Controls\DeviceLegacyAdapter.cs" />
+    <Compile Include="VRGIN\Controls\Handlers\BodyRumbleHandler.cs" />
+    <Compile Include="VRGIN\Controls\Handlers\MenuHandler.cs" />
+    <Compile Include="VRGIN\Controls\HelpText.cs" />
+    <Compile Include="VRGIN\Controls\IShortcut.cs" />
+    <Compile Include="VRGIN\Controls\KeyboardShortcut.cs" />
+    <Compile Include="VRGIN\Controls\LeftController.cs" />
+    <Compile Include="VRGIN\Controls\MultiKeyboardShortcut.cs" />
+    <Compile Include="VRGIN\Controls\RightController.cs" />
+    <Compile Include="VRGIN\Controls\RumbleManager.cs" />
+    <Compile Include="VRGIN\Controls\Speech\VoiceCommand.cs" />
+    <Compile Include="VRGIN\Controls\Tools\MenuTool.cs" />
+    <Compile Include="VRGIN\Controls\Tools\Tool.cs" />
+    <Compile Include="VRGIN\Controls\Tools\WarpTool.cs" />
+    <Compile Include="VRGIN\Core\BlacklistThrottler.cs" />
+    <Compile Include="VRGIN\Core\CameraJudgement.cs" />
+    <Compile Include="VRGIN\Core\CameraKiller.cs" />
+    <Compile Include="VRGIN\Core\CameraSlave.cs" />
+    <Compile Include="VRGIN\Core\CaptureConfig.cs" />
+    <Compile Include="VRGIN\Core\CopiedCameraEventArgs.cs" />
+    <Compile Include="VRGIN\Core\DefaultActor.cs" />
+    <Compile Include="VRGIN\Core\DefaultActorBehaviour.cs" />
+    <Compile Include="VRGIN\Core\GameInterpreter.cs" />
+    <Compile Include="VRGIN\Core\GUIType.cs" />
+    <Compile Include="VRGIN\Core\HMDType.cs" />
+    <Compile Include="VRGIN\Core\IActor.cs" />
+    <Compile Include="VRGIN\Core\InitializeCameraEventArgs.cs" />
+    <Compile Include="VRGIN\Core\IScreenGrabber.cs" />
+    <Compile Include="VRGIN\Core\IVRManagerContext.cs" />
+    <Compile Include="VRGIN\Core\Logger.cs" />
+    <Compile Include="VRGIN\Core\Marker.cs" />
+    <Compile Include="VRGIN\Core\ModeInitializedEventArgs.cs" />
+    <Compile Include="VRGIN\Core\PlayArea.cs" />
+    <Compile Include="VRGIN\Core\ProtectedBehaviour.cs" />
+    <Compile Include="VRGIN\Core\ScreenGrabber.cs" />
+    <Compile Include="VRGIN\Core\Shortcuts.cs" />
+    <Compile Include="VRGIN\Core\VR.cs" />
+    <Compile Include="VRGIN\Core\VRCamera.cs" />
+    <Compile Include="VRGIN\Core\VRGUI.cs" />
+    <Compile Include="VRGIN\Core\VRLog.cs" />
+    <Compile Include="VRGIN\Core\VRManager.cs" />
+    <Compile Include="VRGIN\Core\VRSettings.cs" />
+    <Compile Include="VRGIN\Core\WhitelistThrottler.cs" />
+    <Compile Include="VRGIN\Core\XmlCommentAttribute.cs" />
+    <Compile Include="VRGIN\Core\XmlKeyStroke.cs" />
+    <Compile Include="VRGIN\Helpers\AxisBoundTravelDistanceRumble.cs" />
+    <Compile Include="VRGIN\Helpers\Calculator.cs" />
+    <Compile Include="VRGIN\Helpers\CameraConsumer.cs" />
+    <Compile Include="VRGIN\Helpers\DefaultContext.cs" />
+    <Compile Include="VRGIN\Helpers\GameObjectExtensions.cs" />
+    <Compile Include="VRGIN\Helpers\IRumbleSession.cs" />
+    <Compile Include="VRGIN\Helpers\JSON.cs" />
+    <Compile Include="VRGIN\Helpers\JSONArray.cs" />
+    <Compile Include="VRGIN\Helpers\JSONBinaryTag.cs" />
+    <Compile Include="VRGIN\Helpers\JSONClass.cs" />
+    <Compile Include="VRGIN\Helpers\JSONData.cs" />
+    <Compile Include="VRGIN\Helpers\JSONLazyCreator.cs" />
+    <Compile Include="VRGIN\Helpers\JSONNode.cs" />
+    <Compile Include="VRGIN\Helpers\KeyMode.cs" />
+    <Compile Include="VRGIN\Helpers\KeyStroke.cs" />
+    <Compile Include="VRGIN\Helpers\LookTargetController.cs" />
+    <Compile Include="VRGIN\Helpers\MeshExtension.cs" />
+    <Compile Include="VRGIN\Helpers\MessengerExtensions.cs" />
+    <Compile Include="VRGIN\Helpers\Profiler.cs" />
+    <Compile Include="VRGIN\Helpers\QuaternionExtensions.cs" />
+    <Compile Include="VRGIN\Helpers\RenderTextureExtensions.cs" />
+    <Compile Include="VRGIN\Helpers\ResourceManager.cs" />
+    <Compile Include="VRGIN\Helpers\RumbleImpulse.cs" />
+    <Compile Include="VRGIN\Helpers\RumbleSession.cs" />
+    <Compile Include="VRGIN\Helpers\SteamVRDetector.cs" />
+    <Compile Include="VRGIN\Helpers\TravelDistanceRumble.cs" />
+    <Compile Include="VRGIN\Helpers\UnityHelper.cs" />
+    <Compile Include="VRGIN\Helpers\VelocityRumble.cs" />
+    <Compile Include="VRGIN\Helpers\VRCapturePanorama.cs" />
+    <Compile Include="VRGIN\Modes\ControlMode.cs" />
+    <Compile Include="VRGIN\Modes\ImpersonationMode.cs" />
+    <Compile Include="VRGIN\Modes\LockMode.cs" />
+    <Compile Include="VRGIN\Modes\SeatedMode.cs" />
+    <Compile Include="VRGIN\Modes\StandingMode.cs" />
+    <Compile Include="VRGIN\Native\MouseOperations.cs" />
+    <Compile Include="VRGIN\Native\WindowManager.cs" />
+    <Compile Include="VRGIN\Native\WindowsInterop.cs" />
+    <Compile Include="VRGIN\Resource.cs" />
+    <Compile Include="VRGIN\U46\Helpers\GuiScaler.cs" />
+    <Compile Include="VRGIN\U46\Visuals\PlayAreaVisualization.cs" />
+    <Compile Include="VRGIN\Visuals\ArcRenderer.cs" />
+    <Compile Include="VRGIN\Visuals\DefaultMaterialPalette.cs" />
+    <Compile Include="VRGIN\Visuals\GUIMonitor.cs" />
+    <Compile Include="VRGIN\Visuals\GUIQuad.cs" />
+    <Compile Include="VRGIN\Visuals\GUIQuadRegistry.cs" />
+    <Compile Include="VRGIN\Visuals\IMaterialPalette.cs" />
+    <Compile Include="VRGIN\Visuals\PlayerCamera.cs" />
+    <Compile Include="VRGIN\Visuals\ProceduralPlane.cs" />
+    <Compile Include="VRGIN\Visuals\SimulatedCursor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="VRGIN\Resource.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(TargetPath)" "$(TargetDir)..\" /Y /V</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.CoreModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.targets'))" />
+    <Error Condition="!Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.targets'))" />
+  </Target>
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.XRModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.VRModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UI.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UIModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.AssetBundleModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.AudioModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.PhysicsModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.UnityWebRequestWWWModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.TextRenderingModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.IMGUIModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.InputLegacyModule.targets')" />
+  <Import Project="packages\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.targets" Condition="Exists('packages\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.2019.4.9\build\IllusionLibs.KoikatsuSunshine.UnityEngine.ImageConversionModule.targets')" />
+</Project>

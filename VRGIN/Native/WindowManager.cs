@@ -1,125 +1,114 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using UnityEngine;
 using VRGIN.Core;
-using static VRGIN.Native.WindowsInterop;
 
 namespace VRGIN.Native
 {
-    public class WindowManager
-    {
-        private static List<IntPtr> GetRootWindowsOfProcess(int pid)
-        {
-            List<IntPtr> rootWindows = GetChildWindows(IntPtr.Zero);
-            List<IntPtr> dsProcRootWindows = new List<IntPtr>();
-            foreach (IntPtr hWnd in rootWindows)
-            {
-                uint lpdwProcessId;
-                WindowsInterop.GetWindowThreadProcessId(hWnd, out lpdwProcessId);
-                if (lpdwProcessId == pid)
-                    dsProcRootWindows.Add(hWnd);
-            }
-            return dsProcRootWindows;
-        }
+	public class WindowManager
+	{
+		private static IntPtr? _Handle;
 
-        private static List<IntPtr> GetChildWindows(IntPtr parent)
-        {
-            List<IntPtr> result = new List<IntPtr>();
-            GCHandle listHandle = GCHandle.Alloc(result);
-            try
-            {
-                WindowsInterop.Win32Callback childProc = new WindowsInterop.Win32Callback(EnumWindow);
-                WindowsInterop.EnumChildWindows(parent, childProc, GCHandle.ToIntPtr(listHandle));
-            }
-            finally
-            {
-                if (listHandle.IsAllocated)
-                    listHandle.Free();
-            }
-            return result;
-        }
+		public static IntPtr Handle
+		{
+			get
+			{
+				if (!_Handle.HasValue)
+				{
+					int num = 0;
+					WindowsInterop.RECT lpRect = default(WindowsInterop.RECT);
+					_ = Process.GetCurrentProcess().ProcessName;
+					List<IntPtr> rootWindowsOfProcess = GetRootWindowsOfProcess(Process.GetCurrentProcess().Id);
+					foreach (IntPtr item in rootWindowsOfProcess)
+					{
+						if (WindowsInterop.GetWindowRect(item, ref lpRect) && lpRect.Right - lpRect.Left > num)
+						{
+							num = lpRect.Right - lpRect.Left;
+							_Handle = item;
+						}
+					}
+					if (!_Handle.HasValue)
+					{
+						VRLog.Warn("Fall back to first handle!");
+						_Handle = rootWindowsOfProcess.First();
+					}
+				}
+				return _Handle.Value;
+			}
+		}
 
-        private static bool EnumWindow(IntPtr handle, IntPtr pointer)
-        {
-            GCHandle gch = GCHandle.FromIntPtr(pointer);
-            List<IntPtr> list = gch.Target as List<IntPtr>;
-            if (list == null)
-            {
-                throw new InvalidCastException("GCHandle Target could not be cast as List<IntPtr>");
-            }
-            list.Add(handle);
-            //  You can modify this to check to see if you want to cancel the operation, then return a null here
-            return true;
-        }
+		private static List<IntPtr> GetRootWindowsOfProcess(int pid)
+		{
+			List<IntPtr> childWindows = GetChildWindows(IntPtr.Zero);
+			List<IntPtr> list = new List<IntPtr>();
+			foreach (IntPtr item in childWindows)
+			{
+				WindowsInterop.GetWindowThreadProcessId(item, out var lpdwProcessId);
+				if (lpdwProcessId == pid)
+				{
+					list.Add(item);
+				}
+			}
+			return list;
+		}
 
-        private static IntPtr? _Handle;
-        public static IntPtr Handle
-        {
-            get
-            {
-                if(_Handle == null)
-                {
-                    int currentWidth = 0;
-                    RECT rect = new RECT();
-                    var name = Process.GetCurrentProcess().ProcessName;
-                    var handles = GetRootWindowsOfProcess(Process.GetCurrentProcess().Id);
-                    foreach (var handle in handles)
-                    {
-                        if(GetWindowRect(handle, ref rect) && (rect.Right - rect.Left) > currentWidth)
-                        {
-                            currentWidth = rect.Right - rect.Left;
-                            _Handle = handle;
-                        }
-                    }
+		private static List<IntPtr> GetChildWindows(IntPtr parent)
+		{
+			List<IntPtr> list = new List<IntPtr>();
+			GCHandle value = GCHandle.Alloc(list);
+			try
+			{
+				WindowsInterop.Win32Callback callback = EnumWindow;
+				WindowsInterop.EnumChildWindows(parent, callback, GCHandle.ToIntPtr(value));
+				return list;
+			}
+			finally
+			{
+				if (value.IsAllocated)
+				{
+					value.Free();
+				}
+			}
+		}
 
-                    if(!_Handle.HasValue)
-                    {
-                        VRLog.Warn("Fall back to first handle!");
-                        _Handle = handles.First();
-                    }
+		private static bool EnumWindow(IntPtr handle, IntPtr pointer)
+		{
+			((GCHandle.FromIntPtr(pointer).Target as List<IntPtr>) ?? throw new InvalidCastException("GCHandle Target could not be cast as List<IntPtr>")).Add(handle);
+			return true;
+		}
 
-                }
-                return _Handle.Value;
-            }
-        }
-        
-        public static string GetWindowText(IntPtr hWnd)
-        {
-            // Allocate correct string length first
-            int length = WindowsInterop.GetWindowTextLength(hWnd);
-            StringBuilder sb = new StringBuilder(length + 1);
-            WindowsInterop.GetWindowText(hWnd, sb, sb.Capacity);
-            return sb.ToString();
-        }
-        public static void ConfineCursor()
-        {
-            var clientRect = GetClientRect();
-            ClipCursor(ref clientRect);
-        }
+		public static string GetWindowText(IntPtr hWnd)
+		{
+			StringBuilder stringBuilder = new StringBuilder(WindowsInterop.GetWindowTextLength(hWnd) + 1);
+			WindowsInterop.GetWindowText(hWnd, stringBuilder, stringBuilder.Capacity);
+			return stringBuilder.ToString();
+		}
 
-        public static RECT GetClientRect()
-        {
-            RECT clientRect = new RECT();
-            WindowsInterop.GetClientRect(Handle, ref clientRect);
+		public static void ConfineCursor()
+		{
+			WindowsInterop.RECT rcClip = GetClientRect();
+			WindowsInterop.ClipCursor(ref rcClip);
+		}
 
-            POINT topLeft = new POINT();
-            ClientToScreen(Handle, ref topLeft);
+		public static WindowsInterop.RECT GetClientRect()
+		{
+			WindowsInterop.RECT lpRect = default(WindowsInterop.RECT);
+			WindowsInterop.GetClientRect(Handle, ref lpRect);
+			WindowsInterop.POINT lpPoint = default(WindowsInterop.POINT);
+			WindowsInterop.ClientToScreen(Handle, ref lpPoint);
+			lpRect.Left = lpPoint.X;
+			lpRect.Top = lpPoint.Y;
+			lpRect.Right += lpPoint.X;
+			lpRect.Bottom += lpPoint.Y;
+			return lpRect;
+		}
 
-            clientRect.Left = topLeft.X;
-            clientRect.Top = topLeft.Y;
-            clientRect.Right += topLeft.X;
-            clientRect.Bottom += topLeft.Y;
-
-            return clientRect;
-        }
-
-        public static void Activate()
-        {
-            SetForegroundWindow(Handle);
-        }
-    }
+		public static void Activate()
+		{
+			WindowsInterop.SetForegroundWindow(Handle);
+		}
+	}
 }

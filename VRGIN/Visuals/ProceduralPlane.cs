@@ -1,199 +1,143 @@
-﻿//
-//  ProceduralPlane.cs
-//
-//  Created by Dimitris Doukas
-//  Copyright 2014 doukasd.com
-//
-
-using UnityEngine;
-using System.Collections;
 using System;
+using UnityEngine;
 
 namespace VRGIN.Visuals
 {
-    [RequireComponent(typeof(MeshFilter))]
-    [RequireComponent(typeof(MeshRenderer))]
-    public class ProceduralPlane : MonoBehaviour
-    {
+	[RequireComponent(typeof(MeshFilter))]
+	[RequireComponent(typeof(MeshRenderer))]
+	public class ProceduralPlane : MonoBehaviour
+	{
+		private const int DEFAULT_X_SEGMENTS = 10;
 
-        //constants
-        private const int DEFAULT_X_SEGMENTS = 10;
-        private const int DEFAULT_Y_SEGMENTS = 10;
-        private const int MIN_X_SEGMENTS = 1;
-        private const int MIN_Y_SEGMENTS = 1;
-        private const float DEFAULT_WIDTH = 1.0f;
-        private const float DEFAULT_HEIGHT = 1.0f;
+		private const int DEFAULT_Y_SEGMENTS = 10;
 
-        //public variables
-        public int xSegments = DEFAULT_X_SEGMENTS;
-        public int ySegments = DEFAULT_Y_SEGMENTS;
-        public Vector2 topLeftOffset = Vector2.zero;
-        public Vector2 topRightOffset = Vector2.zero;
-        public Vector2 bottomLeftOffset = Vector2.zero;
-        public Vector2 bottomRightOffset = Vector2.zero;
-        public float distance = 1f;
-        //private variables
-        private Mesh modelMesh;
-        private MeshFilter meshFilter;
-        public float width = DEFAULT_WIDTH;
-        public float height = DEFAULT_HEIGHT;
-        private int numVertexColumns, numVertexRows;    //columns and rows of vertices
-        public float angleSpan = 160;
-        public float curviness = 0;
+		private const int MIN_X_SEGMENTS = 1;
 
-        public void AssignDefaultShader()
-        {
-            //assign it an unlit shader, common if used for digital keystoning of render texture
-            MeshRenderer meshRenderer = (MeshRenderer)gameObject.GetComponent<MeshRenderer>();
-            meshRenderer.sharedMaterial = new Material(Shader.Find("Unlit/Texture"));
-            meshRenderer.sharedMaterial.color = Color.white;
-        }
+		private const int MIN_Y_SEGMENTS = 1;
 
-        public void Rebuild()
-        {
-            //height = distance * 3;
+		private const float DEFAULT_WIDTH = 1f;
 
+		private const float DEFAULT_HEIGHT = 1f;
 
-            //create the mesh
-            modelMesh = new Mesh();
-            modelMesh.name = "ProceduralPlaneMesh";
-            meshFilter = (MeshFilter)gameObject.GetComponent<MeshFilter>();
-            meshFilter.mesh = modelMesh;
+		public int xSegments = 10;
 
-            //sanity check
-            if (xSegments < MIN_X_SEGMENTS) xSegments = MIN_X_SEGMENTS;
-            if (ySegments < MIN_Y_SEGMENTS) ySegments = MIN_Y_SEGMENTS;
+		public int ySegments = 10;
 
-            //calculate how many vertices we need
-            numVertexColumns = xSegments + 1;
-            numVertexRows = ySegments + 1;
+		public Vector2 topLeftOffset = Vector2.zero;
 
-            //calculate sizes
-            int numVertices = numVertexColumns * numVertexRows;
-            int numUVs = numVertices;                   //always
-            int numTris = xSegments * ySegments * 2;    //fact
-            int trisArrayLength = numTris * 3;          //3 places in the array for each tri
+		public Vector2 topRightOffset = Vector2.zero;
 
-            // log the number of tris
-            //Logger.Info ("Plane has " + trisArrayLength/3 + " tris");
+		public Vector2 bottomLeftOffset = Vector2.zero;
 
-            //initialize arrays
-            Vector3[] Vertices = new Vector3[numVertices];
-            Vector2[] UVs = new Vector2[numUVs];
-            int[] Tris = new int[trisArrayLength];
+		public Vector2 bottomRightOffset = Vector2.zero;
 
-            //precalculate increments
-            float xStep = width / xSegments;
-            float yStep = height / ySegments;
-            float uvStepH = 1.0f / xSegments;   // place UVs evenly
-            float uvStepV = 1.0f / ySegments;
-            float xOffset = -width / 2f;        // this offset means we want the pivot at the center
-            float yOffset = -height / 2f;        // same as above
-            float radSpan = angleSpan * Mathf.PI / 180;
-            float mSpan = 1;
-            float aspect = (float)Screen.width / Screen.height;
-            float m2rad = radSpan / mSpan;
+		public float distance = 1f;
 
+		private Mesh modelMesh;
 
-            for (int j = 0; j < numVertexRows; j++)
-            {
-                for (int i = 0; i < numVertexColumns; i++)
-                {
-                    // calculate some weights for the "keystone" vertex pull
-                    // for some reason this doesn't work
-                    // TODO: fix this to cache values and make it faster
-                    //float bottomLeftWeight = ((numVertexColumns-1)-i)/(numVertexColumns-1) * ((numVertexRows-1)-j)/(numVertexRows-1);
+		private MeshFilter meshFilter;
 
-                    // position current vertex
-                    // these offsets are too ridiculous to even try to explain
-                    // ok trying: basically each vertex we drag is affected by the offsets on the 4 courners but
-                    // the weight of that effect is linearly inverse analogous to the distance from that corner
+		public float width = 1f;
 
-                    Vector3 p = new Vector3(
-                             i * xStep + xOffset
-                                                                        + bottomLeftOffset.x * ((numVertexColumns - 1) - i) / (numVertexColumns - 1) * ((numVertexRows - 1) - j) / (numVertexRows - 1)
-                                                                        + bottomRightOffset.x * i / (numVertexColumns - 1) * ((numVertexRows - 1) - j) / (numVertexRows - 1)
-                                                                        + topLeftOffset.x * ((numVertexColumns - 1) - i) / (numVertexColumns - 1) * j / (numVertexRows - 1)
-                                                                        + topRightOffset.x * i / (numVertexColumns - 1) * j / (numVertexRows - 1),
-                            j * yStep + yOffset
-                                                                        + bottomLeftOffset.y * ((numVertexColumns - 1) - i) / (numVertexColumns - 1) * ((numVertexRows - 1) - j) / (numVertexRows - 1)
-                                                                        + bottomRightOffset.y * i / (numVertexColumns - 1) * ((numVertexRows - 1) - j) / (numVertexRows - 1)
-                                                                        + topLeftOffset.y * ((numVertexColumns - 1) - i) / (numVertexColumns - 1) * j / (numVertexRows - 1)
-                                                                        + topRightOffset.y * i / (numVertexColumns - 1) * j / (numVertexRows - 1) - ((height - 1) / 2),
+		public float height = 1f;
 
-                            distance
-                    );
+		private int numVertexColumns;
 
+		private int numVertexRows;
 
-                    float nx = Mathf.Lerp((aspect * height) * p.x, Mathf.Cos(Mathf.PI / 2 - p.x * m2rad) * distance, Mathf.Clamp01(curviness));
-                    float z = Mathf.Sin(Mathf.PI / 2 - p.x * m2rad * Mathf.Clamp01(curviness));
+		public float angleSpan = 160f;
 
-                    int index = j * numVertexColumns + i;
-                    //Logger.Info(90 - x * m2angle);
+		public float curviness;
 
-                    Vertices[index] = new Vector3(nx,
-                                                 p.y,
-                                                  z);
+		public void AssignDefaultShader()
+		{
+			MeshRenderer component = base.gameObject.GetComponent<MeshRenderer>();
+			component.sharedMaterial = new Material(Shader.Find("Unlit/Texture"));
+			component.sharedMaterial.color = Color.white;
+		}
 
-                    if (curviness > 1)
-                    {
-                        float roundness = curviness - 1;
-                        Vertices[index] = Vector3.Lerp(Vertices[index], Vertices[index].normalized * distance, Mathf.Clamp01(roundness));
-                        //  Logger.Info(roundness);
-                    }
+		public void Rebuild()
+		{
+			modelMesh = new Mesh();
+			modelMesh.name = "ProceduralPlaneMesh";
+			meshFilter = base.gameObject.GetComponent<MeshFilter>();
+			meshFilter.mesh = modelMesh;
+			if (xSegments < 1)
+			{
+				xSegments = 1;
+			}
+			if (ySegments < 1)
+			{
+				ySegments = 1;
+			}
+			numVertexColumns = xSegments + 1;
+			numVertexRows = ySegments + 1;
+			int num = numVertexColumns * numVertexRows;
+			int num2 = num;
+			int num3 = xSegments * ySegments * 2 * 3;
+			Vector3[] array = new Vector3[num];
+			Vector2[] array2 = new Vector2[num2];
+			int[] array3 = new int[num3];
+			float num4 = width / (float)xSegments;
+			float num5 = height / (float)ySegments;
+			float num6 = 1f / (float)xSegments;
+			float num7 = 1f / (float)ySegments;
+			float num8 = (0f - width) / 2f;
+			float num9 = (0f - height) / 2f;
+			float num10 = angleSpan * (float)Math.PI / 180f;
+			float num11 = 1f;
+			float num12 = (float)Screen.width / (float)Screen.height;
+			float num13 = num10 / num11;
+			for (int i = 0; i < numVertexRows; i++)
+			{
+				for (int j = 0; j < numVertexColumns; j++)
+				{
+					Vector3 vector = new Vector3((float)j * num4 + num8 + bottomLeftOffset.x * (float)(numVertexColumns - 1 - j) / (float)(numVertexColumns - 1) * (float)(numVertexRows - 1 - i) / (float)(numVertexRows - 1) + bottomRightOffset.x * (float)j / (float)(numVertexColumns - 1) * (float)(numVertexRows - 1 - i) / (float)(numVertexRows - 1) + topLeftOffset.x * (float)(numVertexColumns - 1 - j) / (float)(numVertexColumns - 1) * (float)i / (float)(numVertexRows - 1) + topRightOffset.x * (float)j / (float)(numVertexColumns - 1) * (float)i / (float)(numVertexRows - 1), (float)i * num5 + num9 + bottomLeftOffset.y * (float)(numVertexColumns - 1 - j) / (float)(numVertexColumns - 1) * (float)(numVertexRows - 1 - i) / (float)(numVertexRows - 1) + bottomRightOffset.y * (float)j / (float)(numVertexColumns - 1) * (float)(numVertexRows - 1 - i) / (float)(numVertexRows - 1) + topLeftOffset.y * (float)(numVertexColumns - 1 - j) / (float)(numVertexColumns - 1) * (float)i / (float)(numVertexRows - 1) + topRightOffset.y * (float)j / (float)(numVertexColumns - 1) * (float)i / (float)(numVertexRows - 1) - (height - 1f) / 2f, distance);
+					float x = Mathf.Lerp(num12 * height * vector.x, Mathf.Cos((float)Math.PI / 2f - vector.x * num13) * distance, Mathf.Clamp01(curviness));
+					float z = Mathf.Sin((float)Math.PI / 2f - vector.x * num13 * Mathf.Clamp01(curviness));
+					int num14 = i * numVertexColumns + j;
+					array[num14] = new Vector3(x, vector.y, z);
+					if (curviness > 1f)
+					{
+						float value = curviness - 1f;
+						array[num14] = Vector3.Lerp(array[num14], array[num14].normalized * distance, Mathf.Clamp01(value));
+					}
+					array2[num14] = new Vector2((float)j * num6, (float)i * num7);
+					if (i != 0 && j < numVertexColumns - 1)
+					{
+						int num15 = (i - 1) * xSegments * 6 + j * 6;
+						array3[num15] = i * numVertexColumns + j;
+						array3[num15 + 1] = i * numVertexColumns + j + 1;
+						array3[num15 + 2] = (i - 1) * numVertexColumns + j;
+						array3[num15 + 3] = (i - 1) * numVertexColumns + j;
+						array3[num15 + 4] = i * numVertexColumns + j + 1;
+						array3[num15 + 5] = (i - 1) * numVertexColumns + j + 1;
+					}
+				}
+			}
+			modelMesh.Clear();
+			modelMesh.vertices = array;
+			modelMesh.uv = array2;
+			modelMesh.triangles = array3;
+			modelMesh.RecalculateNormals();
+			modelMesh.RecalculateBounds();
+		}
 
-                    //calculate UVs
-                    UVs[index] = new Vector2(i * uvStepH, j * uvStepV);
+		public float TransformX(float x)
+		{
+			float num = (float)Screen.width / (float)Screen.height;
+			float num2 = angleSpan * (float)Math.PI / 180f;
+			float num3 = 1f;
+			return Mathf.Lerp(num * height * x, Mathf.Cos((float)Math.PI / 2f - x * (num2 / num3)) * distance, curviness);
+		}
 
-                    //create the tris				
-                    if (j == 0 || i >= numVertexColumns - 1)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        // For every vertex we draw 2 tris in this for-loop, therefore we need 2*3=6 indices in the Tris array
-                        int baseIndex = (j - 1) * xSegments * 6 + i * 6;
-
-                        //1st tri - below and in front
-                        Tris[baseIndex + 0] = j * numVertexColumns + i;
-                        Tris[baseIndex + 1] = j * numVertexColumns + i + 1;
-                        Tris[baseIndex + 2] = (j - 1) * numVertexColumns + i;
-
-                        //2nd tri - the one it doesn't touch
-                        Tris[baseIndex + 3] = (j - 1) * numVertexColumns + i;
-                        Tris[baseIndex + 4] = j * numVertexColumns + i + 1;
-                        Tris[baseIndex + 5] = (j - 1) * numVertexColumns + i + 1;
-                    }
-                }
-            }
-
-            // assign vertices, uvs and tris
-            modelMesh.Clear();
-            modelMesh.vertices = Vertices;
-            modelMesh.uv = UVs;
-            modelMesh.triangles = Tris;
-            modelMesh.RecalculateNormals();
-            modelMesh.RecalculateBounds();
-        }
-
-        public float TransformX(float x)
-        {
-            float aspect = (float)Screen.width / Screen.height;
-            float radSpan = angleSpan * Mathf.PI / 180;
-            float mSpan = 1;
-            return Mathf.Lerp((aspect * height) * x, Mathf.Cos(Mathf.PI / 2 - x * (radSpan / mSpan)) * distance, curviness);
-        }
-
-        public float TransformZ(float x)
-        {
-            float aspect = (float)Screen.width / Screen.height;
-            float radSpan = angleSpan * Mathf.PI / 180;
-            float mSpan = 1;
-            float m2rad = radSpan / mSpan;
-
-            return Mathf.Sin(Mathf.PI / 2 - x * m2rad * curviness);
-        }
-    }
-
+		public float TransformZ(float x)
+		{
+			_ = (float)Screen.width / (float)Screen.height;
+			float num = angleSpan * (float)Math.PI / 180f;
+			float num2 = 1f;
+			float num3 = num / num2;
+			return Mathf.Sin((float)Math.PI / 2f - x * num3 * curviness);
+		}
+	}
 }

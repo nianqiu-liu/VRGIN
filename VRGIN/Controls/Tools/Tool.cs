@@ -1,118 +1,91 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
+using Valve.VR;
 using VRGIN.Core;
 
 namespace VRGIN.Controls.Tools
 {
+	public abstract class Tool : ProtectedBehaviour
+	{
+		protected SteamVR_Behaviour_Pose Tracking;
 
-    /// <summary>
-    /// A tool that can be used with a Vive controller.
-    /// </summary>
-    public abstract class Tool : ProtectedBehaviour
-    {
+		private DeviceLegacyAdapter _Controller;
 
-        protected SteamVR_TrackedObject Tracking;
-        protected Controller Owner;
-        protected Controller Neighbor;
+		protected Controller Owner;
 
+		protected Controller Neighbor;
 
-        public abstract Texture2D Image
-        {
-            get;
-        }
+		public abstract Texture2D Image { get; }
 
-        public GameObject Icon
-        {
-            get; set;
-        }
+		public GameObject Icon { get; set; }
 
-        protected override void OnStart()
-        {
-            base.OnStart();
+		protected bool IsTracking
+		{
+			get
+			{
+				if ((bool)Tracking)
+				{
+					return Tracking.isValid;
+				}
+				return false;
+			}
+		}
 
-            Tracking = GetComponent<SteamVR_TrackedObject>();
-            Owner = GetComponent<Controller>();
-            Neighbor = VR.Mode.Left == Owner ? VR.Mode.Right : VR.Mode.Left;
-            VRLog.Info(Neighbor ? "Got my neighbor!" : "No neighbor");
-        }
+		protected DeviceLegacyAdapter Controller => _Controller;
 
-        protected abstract void OnDestroy();
+		protected Controller OtherController => Neighbor;
 
+		protected override void OnAwake()
+		{
+			base.OnAwake();
+			Tracking = GetComponent<SteamVR_Behaviour_Pose>();
+			_Controller = new DeviceLegacyAdapter(Tracking);
+			Owner = GetComponentInChildren<Controller>();
+		}
 
-        /// <summary>
-        /// Gets whether or not the attached controlller is tracking.
-        /// </summary>
-        protected bool IsTracking
-        {
-            get
-            {
-                return Tracking && Tracking.isValid;
-            }
-        }
+		protected override void OnStart()
+		{
+			base.OnStart();
+			Neighbor = ((VR.Mode.Left == Owner) ? VR.Mode.Right : VR.Mode.Left);
+			VRLog.Info(Neighbor ? "Got my neighbor!" : "No neighbor");
+		}
 
-        /// <summary>
-        /// Gets the attached controller input object.
-        /// </summary>
-        protected SteamVR_Controller.Device Controller
-        {
-            get
-            {
-                return SteamVR_Controller.Input((int)Tracking.index);
-            }
-        }
+		protected abstract void OnDestroy();
 
-        /// <summary>
-        /// Gets the attached controller input object.
-        /// </summary>
-        protected Controller OtherController
-        {
-            get
-            {
-                return Neighbor;
-            }
-        }
+		protected virtual void OnEnable()
+		{
+			VRLog.Info("On Enable: {0}", GetType().Name);
+			if ((bool)Icon)
+			{
+				Icon.SetActive(true);
+			}
+			else
+			{
+				VRLog.Info("But no icon...");
+			}
+		}
 
+		protected virtual void OnDisable()
+		{
+			VRLog.Info("On Disable: {0}", GetType().Name);
+			if ((bool)Icon)
+			{
+				Icon.SetActive(false);
+			}
+			else
+			{
+				VRLog.Info("But no icon...");
+			}
+		}
 
-        protected virtual void OnEnable()
-        {
-            VRLog.Info("On Enable: {0}", GetType().Name);
-            if (Icon)
-            {
-                Icon.SetActive(true);
-            }
-            else
-            {
-                VRLog.Info("But no icon...");
+		public virtual List<HelpText> GetHelpTexts()
+		{
+			return new List<HelpText>();
+		}
 
-            }
-        }
-
-        protected virtual void OnDisable()
-        {
-            VRLog.Info("On Disable: {0}", GetType().Name);
-            if (Icon)
-            {
-                Icon.SetActive(false);
-            }
-            else
-            {
-                VRLog.Info("But no icon...");
-            }
-        }
-
-        public virtual List<HelpText> GetHelpTexts()
-        {
-            return new List<HelpText>();
-        }
-
-        protected Transform FindAttachPosition(params string[] names)
-        {
-            return Owner.FindAttachPosition(names);
-        }
-
-    }
+		protected Transform FindAttachPosition(params string[] names)
+		{
+			return Owner.FindAttachPosition(names);
+		}
+	}
 }

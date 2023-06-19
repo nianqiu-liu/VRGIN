@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 using Valve.VR;
 using VRGIN.Controls;
@@ -9,129 +5,121 @@ using VRGIN.Core;
 
 namespace VRGIN.Visuals
 {
-    public class PlayerCamera : ProtectedBehaviour
-    {
-        private SteamVR_RenderModel model;
-        private Controller controller;
-        private bool tracking;
-        private static Vector3 S_Position;
-        private static Quaternion S_Rotation;
+	public class PlayerCamera : ProtectedBehaviour
+	{
+		private SteamVR_RenderModel model;
 
+		private Controller controller;
 
-        private Vector3 posOffset;
-        private Quaternion rotOffset;
+		private bool tracking;
 
-        public static bool Created { get; private set; }
+		private static Vector3 S_Position;
 
-        public static PlayerCamera Create()
-        {
-            Created = true;
-            return GameObject.CreatePrimitive(PrimitiveType.Cube).AddComponent<PlayerCamera>();
-        }
+		private static Quaternion S_Rotation;
 
-        internal static void Remove()
-        {
-            if (Created)
-            {
-                Destroy(GameObject.FindObjectOfType<PlayerCamera>().gameObject);
-                Created = false;
-            }
-        }
-        
-        protected void OnEnable()
-        {
-            VRGUI.Instance.Listen();
-        }
+		private Vector3 posOffset;
 
-        protected void OnDisable()
-        {
-            VRGUI.Instance.Unlisten();
-        }
+		private Quaternion rotOffset;
 
-        protected override void OnAwake()
-        {
-            var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.transform.SetParent(transform, false);
-            var sphere2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere2.transform.SetParent(transform, false);
+		public static bool Created { get; private set; }
 
-            transform.localScale = 0.3f * Vector3.one;
-            transform.localScale = new Vector3(0.2f, 0.2f, 0.4f);
+		public static PlayerCamera Create()
+		{
+			Created = true;
+			return GameObject.CreatePrimitive(PrimitiveType.Cube).AddComponent<PlayerCamera>();
+		}
 
-            sphere.transform.localScale = Vector3.one * 0.3f;
-            sphere.transform.localPosition = Vector3.forward * 0.5f;
-            sphere2.transform.localScale = Vector3.one * 0.3f;
-            sphere2.transform.localPosition = Vector3.up * 0.5f;
+		internal static void Remove()
+		{
+			if (Created)
+			{
+				Object.Destroy(Object.FindObjectOfType<PlayerCamera>().gameObject);
+				Created = false;
+			}
+		}
 
-            GetComponent<Collider>().isTrigger = true;
+		protected void OnEnable()
+		{
+			VRGUI.Instance.Listen();
+		}
 
-            // Disable head camera, which is usually used for screen output
-            model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
-            model.transform.SetParent(VR.Camera.SteamCam.head, false);
-            model.shader = VR.Context.Materials.StandardShader;
-            model.SetDeviceIndex((int)OpenVR.k_unTrackedDeviceIndex_Hmd);
-            model.gameObject.layer = LayerMask.NameToLayer(VR.Context.InvisibleLayer);
+		protected void OnDisable()
+		{
+			VRGUI.Instance.Unlisten();
+		}
 
-            var cam = gameObject.AddComponent<Camera>();
-            cam.depth = 1;
-            cam.nearClipPlane = 0.3f;
-            cam.cullingMask = int.MaxValue & ~VR.Context.UILayerMask;
+		protected override void OnAwake()
+		{
+			GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			obj.transform.SetParent(base.transform, false);
+			GameObject gameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+			gameObject.transform.SetParent(base.transform, false);
+			base.transform.localScale = 0.3f * Vector3.one;
+			base.transform.localScale = new Vector3(0.2f, 0.2f, 0.4f);
+			obj.transform.localScale = Vector3.one * 0.3f;
+			obj.transform.localPosition = Vector3.forward * 0.5f;
+			gameObject.transform.localScale = Vector3.one * 0.3f;
+			gameObject.transform.localPosition = Vector3.up * 0.5f;
+			GetComponent<Collider>().isTrigger = true;
+			model = new GameObject("Model").AddComponent<SteamVR_RenderModel>();
+			model.transform.SetParent(VR.Camera.SteamCam.head, false);
+			model.shader = VR.Context.Materials.StandardShader;
+			model.SetDeviceIndex(0);
+			model.gameObject.layer = LayerMask.NameToLayer(VR.Context.InvisibleLayer);
+			Camera camera = base.gameObject.AddComponent<Camera>();
+			camera.depth = 1f;
+			camera.nearClipPlane = 0.3f;
+			camera.cullingMask = 0x7FFFFFFF & ~VR.Context.UILayerMask;
+			base.transform.position = S_Position;
+			base.transform.rotation = S_Rotation;
+		}
 
-            transform.position = S_Position;
-            transform.rotation = S_Rotation;
-        }
+		protected override void OnUpdate()
+		{
+			S_Position = base.transform.position;
+			S_Rotation = base.transform.rotation;
+			CheckInput();
+		}
 
-        protected override void OnUpdate()
-        {
-            S_Position = transform.position;
-            S_Rotation = transform.rotation;
+		protected void CheckInput()
+		{
+			if (!controller)
+			{
+				return;
+			}
+			if (!tracking && controller.Input.GetPressDown(EVRButtonId.k_EButton_Axis1))
+			{
+				tracking = true;
+				posOffset = base.transform.position - controller.transform.position;
+				rotOffset = Quaternion.Inverse(controller.transform.rotation) * base.transform.rotation;
+			}
+			else if (tracking)
+			{
+				if (controller.Input.GetPressUp(EVRButtonId.k_EButton_Axis1))
+				{
+					tracking = false;
+					return;
+				}
+				base.transform.position = controller.transform.position + posOffset;
+				base.transform.rotation = controller.transform.rotation * rotOffset;
+			}
+		}
 
-            CheckInput();
-        }
+		public void OnTriggerEnter(Collider other)
+		{
+			GetComponent<Renderer>().material.color = Color.red;
+			controller = other.GetComponentInParent<Controller>();
+			controller.ToolEnabled = false;
+		}
 
-        protected void CheckInput()
-        {
-            if (controller)
-            {
-                if (!tracking && SteamVR_Controller.Input((int)controller.Tracking.index).GetPressDown(EVRButtonId.k_EButton_SteamVR_Trigger))
-                {
-                    tracking = true;
-
-
-                    posOffset = transform.position - controller.transform.position;
-                    rotOffset = Quaternion.Inverse(controller.transform.rotation) * transform.rotation;
-                }
-                else if (tracking)
-                {
-                    if (SteamVR_Controller.Input((int)controller.Tracking.index).GetPressUp(EVRButtonId.k_EButton_SteamVR_Trigger))
-                    {
-                        tracking = false;
-                    }
-                    else
-                    {
-                        transform.position = controller.transform.position + posOffset;
-                        transform.rotation = controller.transform.rotation * rotOffset;
-                    }
-                }
-            }
-        }
-
-        public void OnTriggerEnter(Collider other)
-        {
-            GetComponent<Renderer>().material.color = Color.red;
-            controller = other.GetComponentInParent<Controller>();
-            controller.ToolEnabled = false;
-        }
-
-        public void OnTriggerExit()
-        {
-            GetComponent<Renderer>().material.color = Color.white;
-            controller.ToolEnabled = true;
-
-            if (!tracking)
-                controller = null;
-        }
-
-
-    }
+		public void OnTriggerExit()
+		{
+			GetComponent<Renderer>().material.color = Color.white;
+			controller.ToolEnabled = true;
+			if (!tracking)
+			{
+				controller = null;
+			}
+		}
+	}
 }

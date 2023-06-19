@@ -1,44 +1,42 @@
 namespace Valve.VR
 {
-	public abstract class SteamVR_Action_Source : ISteamVR_Action_Source
-	{
-		protected ulong inputSourceHandle;
+    public abstract class SteamVR_Action_Source : ISteamVR_Action_Source
+    {
+        protected ulong inputSourceHandle;
 
-		protected SteamVR_Action action;
+        protected SteamVR_Action action;
 
-		public string fullPath => action.fullPath;
+        public string fullPath => action.fullPath;
 
-		public ulong handle => action.handle;
+        public ulong handle => action.handle;
 
-		public SteamVR_ActionSet actionSet => action.actionSet;
+        public SteamVR_ActionSet actionSet => action.actionSet;
 
-		public SteamVR_ActionDirections direction => action.direction;
+        public SteamVR_ActionDirections direction => action.direction;
 
-		public SteamVR_Input_Sources inputSource { get; protected set; }
+        public SteamVR_Input_Sources inputSource { get; protected set; }
 
-		public bool setActive => actionSet.IsActive(inputSource);
+        public bool setActive => actionSet.IsActive(inputSource);
 
-		public abstract bool active { get; }
+        public abstract bool active { get; }
 
-		public abstract bool activeBinding { get; }
+        public abstract bool activeBinding { get; }
 
-		public abstract bool lastActive { get; protected set; }
+        public abstract bool lastActive { get; protected set; }
 
-		public abstract bool lastActiveBinding { get; }
+        public abstract bool lastActiveBinding { get; }
 
-		public virtual void Preinitialize(SteamVR_Action wrappingAction, SteamVR_Input_Sources forInputSource)
-		{
-			action = wrappingAction;
-			inputSource = forInputSource;
-		}
+        public virtual void Preinitialize(SteamVR_Action wrappingAction, SteamVR_Input_Sources forInputSource)
+        {
+            action = wrappingAction;
+            inputSource = forInputSource;
+        }
 
-		public SteamVR_Action_Source()
-		{
-		}
+        public SteamVR_Action_Source() { }
 
-		public virtual void Initialize()
-		{
-			inputSourceHandle = SteamVR_Input_Source.GetHandle(inputSource);
-		}
-	}
+        public virtual void Initialize()
+        {
+            inputSourceHandle = SteamVR_Input_Source.GetHandle(inputSource);
+        }
+    }
 }

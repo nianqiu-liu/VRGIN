@@ -9,405 +9,338 @@ using VRGIN.Visuals;
 
 namespace VRGIN.Controls.Handlers
 {
-	public class MenuHandler : ProtectedBehaviour
-	{
-		private class ResizeHandler : ProtectedBehaviour
-		{
-			private GUIQuad _Gui;
+    public class MenuHandler : ProtectedBehaviour
+    {
+        private class ResizeHandler : ProtectedBehaviour
+        {
+            private GUIQuad _Gui;
 
-			private Vector3? _StartLeft;
+            private Vector3? _StartLeft;
 
-			private Vector3? _StartRight;
+            private Vector3? _StartRight;
 
-			private Vector3? _StartScale;
+            private Vector3? _StartScale;
 
-			private Quaternion? _StartRotation;
+            private Quaternion? _StartRotation;
 
-			private Vector3? _StartPosition;
+            private Vector3? _StartPosition;
 
-			private Quaternion _StartRotationController;
+            private Quaternion _StartRotationController;
 
-			private Vector3? _OffsetFromCenter;
+            private Vector3? _OffsetFromCenter;
 
-			public bool IsDragging { get; private set; }
+            public bool IsDragging { get; private set; }
 
-			protected override void OnStart()
-			{
-				base.OnStart();
-				_Gui = GetComponent<GUIQuad>();
-			}
+            protected override void OnStart()
+            {
+                base.OnStart();
+                _Gui = GetComponent<GUIQuad>();
+            }
 
-			protected override void OnUpdate()
-			{
-				base.OnUpdate();
-				IsDragging = SteamVR_Actions.legacy_emulate.Axis1_Press.state;
-				if (IsDragging)
-				{
-					if (!_StartScale.HasValue)
-					{
-						Initialize();
-					}
-					Vector3 position = VR.Mode.Left.transform.position;
-					Vector3 position2 = VR.Mode.Right.transform.position;
-					float num = Vector3.Distance(position, position2);
-					float num2 = Vector3.Distance(_StartLeft.Value, _StartRight.Value);
-					Vector3 vector = position2 - position;
-					Vector3 vector2 = position + vector * 0.5f;
-					Quaternion quaternion = Quaternion.Inverse(VR.Camera.SteamCam.origin.rotation);
-					Quaternion averageRotation = GetAverageRotation();
-					Quaternion quaternion2 = quaternion * averageRotation * Quaternion.Inverse(quaternion * _StartRotationController);
-					_Gui.transform.localScale = num / num2 * _StartScale.Value;
-					_Gui.transform.localRotation = quaternion2 * _StartRotation.Value;
-					_Gui.transform.position = vector2 + averageRotation * Quaternion.Inverse(_StartRotationController) * _OffsetFromCenter.Value;
-				}
-				else
-				{
-					_StartScale = null;
-				}
-			}
+            protected override void OnUpdate()
+            {
+                base.OnUpdate();
+                IsDragging = SteamVR_Actions.legacy_emulate.Axis1_Press.state;
+                if (IsDragging)
+                {
+                    if (!_StartScale.HasValue) Initialize();
+                    var position = VR.Mode.Left.transform.position;
+                    var position2 = VR.Mode.Right.transform.position;
+                    var num = Vector3.Distance(position, position2);
+                    var num2 = Vector3.Distance(_StartLeft.Value, _StartRight.Value);
+                    var vector = position2 - position;
+                    var vector2 = position + vector * 0.5f;
+                    var quaternion = Quaternion.Inverse(VR.Camera.SteamCam.origin.rotation);
+                    var averageRotation = GetAverageRotation();
+                    var quaternion2 = quaternion * averageRotation * Quaternion.Inverse(quaternion * _StartRotationController);
+                    _Gui.transform.localScale = num / num2 * _StartScale.Value;
+                    _Gui.transform.localRotation = quaternion2 * _StartRotation.Value;
+                    _Gui.transform.position = vector2 + averageRotation * Quaternion.Inverse(_StartRotationController) * _OffsetFromCenter.Value;
+                }
+                else
+                    _StartScale = null;
+            }
 
-			private Quaternion GetAverageRotation()
-			{
-				Vector3 position = VR.Mode.Left.transform.position;
-				Vector3 normalized = (VR.Mode.Right.transform.position - position).normalized;
-				Vector3 vector = Vector3.Lerp(VR.Mode.Left.transform.forward, VR.Mode.Right.transform.forward, 0.5f);
-				return Quaternion.LookRotation(Vector3.Cross(normalized, vector).normalized, vector);
-			}
+            private Quaternion GetAverageRotation()
+            {
+                var position = VR.Mode.Left.transform.position;
+                var normalized = (VR.Mode.Right.transform.position - position).normalized;
+                var vector = Vector3.Lerp(VR.Mode.Left.transform.forward, VR.Mode.Right.transform.forward, 0.5f);
+                return Quaternion.LookRotation(Vector3.Cross(normalized, vector).normalized, vector);
+            }
 
-			private void Initialize()
-			{
-				_StartLeft = VR.Mode.Left.transform.position;
-				_StartRight = VR.Mode.Right.transform.position;
-				_StartScale = _Gui.transform.localScale;
-				_StartRotation = _Gui.transform.localRotation;
-				_StartPosition = _Gui.transform.position;
-				_StartRotationController = GetAverageRotation();
-				Vector3.Distance(_StartLeft.Value, _StartRight.Value);
-				Vector3 vector = _StartRight.Value - _StartLeft.Value;
-				Vector3 vector2 = _StartLeft.Value + vector * 0.5f;
-				_OffsetFromCenter = base.transform.position - vector2;
-			}
-		}
+            private void Initialize()
+            {
+                _StartLeft = VR.Mode.Left.transform.position;
+                _StartRight = VR.Mode.Right.transform.position;
+                _StartScale = _Gui.transform.localScale;
+                _StartRotation = _Gui.transform.localRotation;
+                _StartPosition = _Gui.transform.position;
+                _StartRotationController = GetAverageRotation();
+                Vector3.Distance(_StartLeft.Value, _StartRight.Value);
+                var vector = _StartRight.Value - _StartLeft.Value;
+                var vector2 = _StartLeft.Value + vector * 0.5f;
+                _OffsetFromCenter = transform.position - vector2;
+            }
+        }
 
-		private Controller _Controller;
+        private Controller _Controller;
 
-		private const float RANGE = 0.25f;
+        private const float RANGE = 0.25f;
 
-		private const int MOUSE_STABILIZER_THRESHOLD = 30;
+        private const int MOUSE_STABILIZER_THRESHOLD = 30;
 
-		private Controller.Lock _LaserLock = Controller.Lock.Invalid;
+        private Controller.Lock _LaserLock = Controller.Lock.Invalid;
 
-		private LineRenderer Laser;
+        private LineRenderer Laser;
 
-		private Vector2? mouseDownPosition;
+        private Vector2? mouseDownPosition;
 
-		private GUIQuad _Target;
+        private GUIQuad _Target;
 
-		private MenuHandler _Other;
+        private MenuHandler _Other;
 
-		private ResizeHandler _ResizeHandler;
+        private ResizeHandler _ResizeHandler;
 
-		private Vector3 _ScaleVector;
+        private Vector3 _ScaleVector;
 
-		private bool IsResizing
-		{
-			get
-			{
-				if ((bool)_ResizeHandler)
-				{
-					return _ResizeHandler.IsDragging;
-				}
-				return false;
-			}
-		}
+        private bool IsResizing
+        {
+            get
+            {
+                if ((bool)_ResizeHandler) return _ResizeHandler.IsDragging;
+                return false;
+            }
+        }
 
-		public bool LaserVisible
-		{
-			get
-			{
-				if ((bool)Laser)
-				{
-					return Laser.gameObject.activeSelf;
-				}
-				return false;
-			}
-			set
-			{
-				if (!Laser)
-				{
-					return;
-				}
-				if (value && !_LaserLock.IsValid)
-				{
-					_LaserLock = _Controller.AcquireFocus();
-					if (!_LaserLock.IsValid)
-					{
-						return;
-					}
-				}
-				else if (!value && _LaserLock.IsValid)
-				{
-					_LaserLock.Release();
-				}
-				Laser.gameObject.SetActive(value);
-				if (value)
-				{
-					Laser.SetPosition(0, Laser.transform.position);
-					Laser.SetPosition(1, Laser.transform.position);
-				}
-				else
-				{
-					mouseDownPosition = null;
-				}
-			}
-		}
+        public bool LaserVisible
+        {
+            get
+            {
+                if ((bool)Laser) return Laser.gameObject.activeSelf;
+                return false;
+            }
+            set
+            {
+                if (!Laser) return;
+                if (value && !_LaserLock.IsValid)
+                {
+                    _LaserLock = _Controller.AcquireFocus();
+                    if (!_LaserLock.IsValid) return;
+                }
+                else if (!value && _LaserLock.IsValid) _LaserLock.Release();
 
-		public bool IsPressing { get; private set; }
+                Laser.gameObject.SetActive(value);
+                if (value)
+                {
+                    Laser.SetPosition(0, Laser.transform.position);
+                    Laser.SetPosition(1, Laser.transform.position);
+                }
+                else
+                    mouseDownPosition = null;
+            }
+        }
 
-		protected override void OnAwake()
-		{
-			base.OnAwake();
-			VRLog.Info("Menu Handler OnAwake");
-			_Controller = GetComponent<Controller>();
-			_ScaleVector = new Vector2((float)VRGUI.Width / (float)Screen.width, (float)VRGUI.Height / (float)Screen.height);
-		}
+        public bool IsPressing { get; private set; }
 
-		protected override void OnStart()
-		{
-			base.OnStart();
-			VRLog.Info("Menu Handler started");
-			_Other = _Controller.Other.GetComponent<MenuHandler>();
-		}
+        protected override void OnAwake()
+        {
+            base.OnAwake();
+            VRLog.Info("Menu Handler OnAwake");
+            _Controller = GetComponent<Controller>();
+            _ScaleVector = new Vector2((float)VRGUI.Width / (float)Screen.width, (float)VRGUI.Height / (float)Screen.height);
+        }
 
-		private void OnRenderModelLoaded()
-		{
-			try
-			{
-				if (!_Controller)
-				{
-					_Controller = GetComponent<Controller>();
-				}
-				Transform transform = _Controller.FindAttachPosition("tip");
-				if (!transform)
-				{
-					VRLog.Error("Attach position not found for laser!");
-					transform = base.transform;
-				}
-				Laser = new GameObject().AddComponent<LineRenderer>();
-				Laser.transform.SetParent(transform, false);
-				Laser.material = new Material(VR.Context.Materials.Sprite);
-				Laser.material.renderQueue += 5000;
-				Laser.SetColors(Color.cyan, Color.cyan);
-				if (SteamVR.instance.hmd_TrackingSystemName == "lighthouse")
-				{
-					Laser.transform.localRotation = Quaternion.Euler(60f, 0f, 0f);
-					Laser.transform.position += Laser.transform.forward * 0.06f;
-				}
-				Laser.SetVertexCount(2);
-				Laser.useWorldSpace = true;
-				Laser.SetWidth(0.002f, 0.002f);
-			}
-			catch (Exception obj)
-			{
-				VRLog.Error(obj);
-			}
-		}
+        protected override void OnStart()
+        {
+            base.OnStart();
+            VRLog.Info("Menu Handler started");
+            _Other = _Controller.Other.GetComponent<MenuHandler>();
+        }
 
-		protected override void OnUpdate()
-		{
-			base.OnUpdate();
-			if (LaserVisible)
-			{
-				if (IsResizing)
-				{
-					Laser.SetPosition(0, Laser.transform.position);
-					Laser.SetPosition(1, Laser.transform.position);
-				}
-				else
-				{
-					UpdateLaser();
-				}
-			}
-			else if (_Controller.CanAcquireFocus())
-			{
-				CheckForNearMenu();
-			}
-			CheckInput();
-		}
+        private void OnRenderModelLoaded()
+        {
+            try
+            {
+                if (!_Controller) _Controller = GetComponent<Controller>();
+                var transform = _Controller.FindAttachPosition("tip");
+                if (!transform)
+                {
+                    VRLog.Error("Attach position not found for laser!");
+                    transform = this.transform;
+                }
 
-		private void OnDisable()
-		{
-			if (_LaserLock.IsValid)
-			{
-				_LaserLock.Release();
-			}
-		}
+                Laser = new GameObject().AddComponent<LineRenderer>();
+                Laser.transform.SetParent(transform, false);
+                Laser.material = new Material(VR.Context.Materials.Sprite);
+                Laser.material.renderQueue += 5000;
+                Laser.SetColors(Color.cyan, Color.cyan);
+                if (SteamVR.instance.hmd_TrackingSystemName == "lighthouse")
+                {
+                    Laser.transform.localRotation = Quaternion.Euler(60f, 0f, 0f);
+                    Laser.transform.position += Laser.transform.forward * 0.06f;
+                }
 
-		private void EnsureResizeHandler()
-		{
-			if (!_ResizeHandler)
-			{
-				_ResizeHandler = _Target.GetComponent<ResizeHandler>();
-				if (!_ResizeHandler)
-				{
-					_ResizeHandler = _Target.gameObject.AddComponent<ResizeHandler>();
-				}
-			}
-		}
+                Laser.SetVertexCount(2);
+                Laser.useWorldSpace = true;
+                Laser.SetWidth(0.002f, 0.002f);
+            }
+            catch (Exception obj)
+            {
+                VRLog.Error(obj);
+            }
+        }
 
-		private void EnsureNoResizeHandler()
-		{
-			if ((bool)_ResizeHandler)
-			{
-				UnityEngine.Object.DestroyImmediate(_ResizeHandler);
-			}
-			_ResizeHandler = null;
-		}
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (LaserVisible)
+            {
+                if (IsResizing)
+                {
+                    Laser.SetPosition(0, Laser.transform.position);
+                    Laser.SetPosition(1, Laser.transform.position);
+                }
+                else
+                    UpdateLaser();
+            }
+            else if (_Controller.CanAcquireFocus()) CheckForNearMenu();
 
-		protected void CheckInput()
-		{
-			IsPressing = false;
-			DeviceLegacyAdapter input = _Controller.Input;
-			if (!LaserVisible || !_Target)
-			{
-				return;
-			}
-			if (_Other.LaserVisible && _Other._Target == _Target)
-			{
-				EnsureResizeHandler();
-			}
-			else
-			{
-				EnsureNoResizeHandler();
-			}
-			if (IsResizing)
-			{
-				return;
-			}
-			if (input.GetPressDown(EVRButtonId.k_EButton_Axis1))
-			{
-				IsPressing = true;
-				VR.Input.Mouse.LeftButtonDown();
-				mouseDownPosition = Vector2.Scale(new Vector2(Input.mousePosition.x, (float)Screen.height - Input.mousePosition.y), _ScaleVector);
-			}
-			if (input.GetPress(EVRButtonId.k_EButton_Axis1))
-			{
-				IsPressing = true;
-			}
-			if (input.GetPressUp(EVRButtonId.k_EButton_Axis1))
-			{
-				IsPressing = true;
-				VR.Input.Mouse.LeftButtonUp();
-				mouseDownPosition = null;
-			}
-			if (input.GetPressUp(EVRButtonId.k_EButton_Grip))
-			{
-				MenuTool component = _Controller.GetComponent<MenuTool>();
-				if ((bool)component && !component.Gui)
-				{
-					component.TakeGUI(_Target);
-					_Controller.ToolIndex = _Controller.Tools.IndexOf(component);
-				}
-			}
-		}
+            CheckInput();
+        }
 
-		private void CheckForNearMenu()
-		{
-			_Target = GUIQuadRegistry.Quads.FirstOrDefault(IsLaserable);
-			if ((bool)_Target)
-			{
-				LaserVisible = true;
-			}
-		}
+        private void OnDisable()
+        {
+            if (_LaserLock.IsValid) _LaserLock.Release();
+        }
 
-		private bool IsLaserable(GUIQuad quad)
-		{
-			RaycastHit hit;
-			if (IsWithinRange(quad))
-			{
-				return Raycast(quad, out hit);
-			}
-			return false;
-		}
+        private void EnsureResizeHandler()
+        {
+            if (!_ResizeHandler)
+            {
+                _ResizeHandler = _Target.GetComponent<ResizeHandler>();
+                if (!_ResizeHandler) _ResizeHandler = _Target.gameObject.AddComponent<ResizeHandler>();
+            }
+        }
 
-		private float GetRange(GUIQuad quad)
-		{
-			return Mathf.Clamp(quad.transform.localScale.magnitude * 0.25f, 0.25f, 1.25f) * VR.Settings.IPDScale;
-		}
+        private void EnsureNoResizeHandler()
+        {
+            if ((bool)_ResizeHandler) DestroyImmediate(_ResizeHandler);
+            _ResizeHandler = null;
+        }
 
-		private bool IsWithinRange(GUIQuad quad)
-		{
-			if (!Laser)
-			{
-				return false;
-			}
-			if (quad.transform.parent == base.transform)
-			{
-				return false;
-			}
-			Vector3 lhs = -quad.transform.forward;
-			_ = quad.transform.position;
-			Vector3 position = Laser.transform.position;
-			Vector3 forward = Laser.transform.forward;
-			float num = (0f - quad.transform.InverseTransformPoint(position).z) * quad.transform.localScale.magnitude;
-			if (num > 0f && num < GetRange(quad))
-			{
-				return Vector3.Dot(lhs, forward) < 0f;
-			}
-			return false;
-		}
+        protected void CheckInput()
+        {
+            IsPressing = false;
+            var input = _Controller.Input;
+            if (!LaserVisible || !_Target) return;
+            if (_Other.LaserVisible && _Other._Target == _Target)
+                EnsureResizeHandler();
+            else
+                EnsureNoResizeHandler();
+            if (IsResizing) return;
+            if (input.GetPressDown(EVRButtonId.k_EButton_Axis1))
+            {
+                IsPressing = true;
+                VR.Input.Mouse.LeftButtonDown();
+                mouseDownPosition = Vector2.Scale(new Vector2(Input.mousePosition.x, (float)Screen.height - Input.mousePosition.y), _ScaleVector);
+            }
 
-		private bool Raycast(GUIQuad quad, out RaycastHit hit)
-		{
-			Vector3 position = Laser.transform.position;
-			Vector3 forward = Laser.transform.forward;
-			Collider component = quad.GetComponent<Collider>();
-			if ((bool)component)
-			{
-				Ray ray = new Ray(position, forward);
-				return component.Raycast(ray, out hit, GetRange(quad));
-			}
-			hit = default(RaycastHit);
-			return false;
-		}
+            if (input.GetPress(EVRButtonId.k_EButton_Axis1)) IsPressing = true;
+            if (input.GetPressUp(EVRButtonId.k_EButton_Axis1))
+            {
+                IsPressing = true;
+                VR.Input.Mouse.LeftButtonUp();
+                mouseDownPosition = null;
+            }
 
-		private void UpdateLaser()
-		{
-			Laser.SetPosition(0, Laser.transform.position);
-			Laser.SetPosition(1, Laser.transform.position + Laser.transform.forward);
-			if ((bool)_Target && _Target.gameObject.activeInHierarchy)
-			{
-				if (IsWithinRange(_Target) && Raycast(_Target, out var hit))
-				{
-					Laser.SetPosition(1, hit.point);
-					if (!IsOtherWorkingOn(_Target))
-					{
-						Vector2 b = new Vector2(hit.textureCoord.x * (float)VRGUI.Width, (1f - hit.textureCoord.y) * (float)VRGUI.Height);
-						if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, b) > 30f)
-						{
-							MouseOperations.SetClientCursorPosition((int)b.x, (int)b.y);
-							mouseDownPosition = null;
-						}
-					}
-				}
-				else
-				{
-					LaserVisible = false;
-				}
-			}
-			else
-			{
-				LaserVisible = false;
-			}
-		}
+            if (input.GetPressUp(EVRButtonId.k_EButton_Grip))
+            {
+                var component = _Controller.GetComponent<MenuTool>();
+                if ((bool)component && !component.Gui)
+                {
+                    component.TakeGUI(_Target);
+                    _Controller.ToolIndex = _Controller.Tools.IndexOf(component);
+                }
+            }
+        }
 
-		private bool IsOtherWorkingOn(GUIQuad target)
-		{
-			if ((bool)_Other && _Other.LaserVisible && _Other._Target == target)
-			{
-				return _Other.IsPressing;
-			}
-			return false;
-		}
-	}
+        private void CheckForNearMenu()
+        {
+            _Target = GUIQuadRegistry.Quads.FirstOrDefault(IsLaserable);
+            if ((bool)_Target) LaserVisible = true;
+        }
+
+        private bool IsLaserable(GUIQuad quad)
+        {
+            RaycastHit hit;
+            if (IsWithinRange(quad)) return Raycast(quad, out hit);
+            return false;
+        }
+
+        private float GetRange(GUIQuad quad)
+        {
+            return Mathf.Clamp(quad.transform.localScale.magnitude * 0.25f, 0.25f, 1.25f) * VR.Settings.IPDScale;
+        }
+
+        private bool IsWithinRange(GUIQuad quad)
+        {
+            if (!Laser) return false;
+            if (quad.transform.parent == transform) return false;
+            var lhs = -quad.transform.forward;
+            _ = quad.transform.position;
+            var position = Laser.transform.position;
+            var forward = Laser.transform.forward;
+            var num = (0f - quad.transform.InverseTransformPoint(position).z) * quad.transform.localScale.magnitude;
+            if (num > 0f && num < GetRange(quad)) return Vector3.Dot(lhs, forward) < 0f;
+            return false;
+        }
+
+        private bool Raycast(GUIQuad quad, out RaycastHit hit)
+        {
+            var position = Laser.transform.position;
+            var forward = Laser.transform.forward;
+            var component = quad.GetComponent<Collider>();
+            if ((bool)component)
+            {
+                var ray = new Ray(position, forward);
+                return component.Raycast(ray, out hit, GetRange(quad));
+            }
+
+            hit = default;
+            return false;
+        }
+
+        private void UpdateLaser()
+        {
+            Laser.SetPosition(0, Laser.transform.position);
+            Laser.SetPosition(1, Laser.transform.position + Laser.transform.forward);
+            if ((bool)_Target && _Target.gameObject.activeInHierarchy)
+            {
+                if (IsWithinRange(_Target) && Raycast(_Target, out var hit))
+                {
+                    Laser.SetPosition(1, hit.point);
+                    if (!IsOtherWorkingOn(_Target))
+                    {
+                        var b = new Vector2(hit.textureCoord.x * (float)VRGUI.Width, (1f - hit.textureCoord.y) * (float)VRGUI.Height);
+                        if (!mouseDownPosition.HasValue || Vector2.Distance(mouseDownPosition.Value, b) > 30f)
+                        {
+                            MouseOperations.SetClientCursorPosition((int)b.x, (int)b.y);
+                            mouseDownPosition = null;
+                        }
+                    }
+                }
+                else
+                    LaserVisible = false;
+            }
+            else
+                LaserVisible = false;
+        }
+
+        private bool IsOtherWorkingOn(GUIQuad target)
+        {
+            if ((bool)_Other && _Other.LaserVisible && _Other._Target == target) return _Other.IsPressing;
+            return false;
+        }
+    }
 }

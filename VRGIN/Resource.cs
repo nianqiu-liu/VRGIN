@@ -8,51 +8,34 @@ using System.Runtime.CompilerServices;
 
 namespace VRGIN
 {
-	[global::System.CodeDom.Compiler.GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
-	[global::System.Diagnostics.DebuggerNonUserCode]
-	[global::System.Runtime.CompilerServices.CompilerGenerated]
-	internal class Resource
-	{
-		internal Resource()
-		{
-		}
+    [GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [DebuggerNonUserCode]
+    [CompilerGenerated]
+    internal class Resource
+    {
+        internal Resource() { }
 
-		[global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-		internal static global::System.Globalization.CultureInfo Culture
-		{
-			get
-			{
-				return global::VRGIN.Resource.resourceCulture;
-			}
-			set
-			{
-				global::VRGIN.Resource.resourceCulture = value;
-			}
-		}
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        internal static CultureInfo Culture
+        {
+            get => resourceCulture;
+            set => resourceCulture = value;
+        }
 
-		[global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-		internal static global::System.Resources.ResourceManager ResourceManager
-		{
-			get
-			{
-				if (global::VRGIN.Resource.resourceMan == null)
-				{
-					global::VRGIN.Resource.resourceMan = new global::System.Resources.ResourceManager("VRGIN.Resource", typeof(global::VRGIN.Resource).Assembly);
-				}
-				return global::VRGIN.Resource.resourceMan;
-			}
-		}
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        internal static ResourceManager ResourceManager
+        {
+            get
+            {
+                if (resourceMan == null) resourceMan = new ResourceManager("VRGIN.Resource", typeof(Resource).Assembly);
+                return resourceMan;
+            }
+        }
 
-		internal static byte[] steamvr_2019
-		{
-			get
-			{
-				return (byte[])global::VRGIN.Resource.ResourceManager.GetObject("steamvr_2019", global::VRGIN.Resource.resourceCulture);
-			}
-		}
+        internal static byte[] steamvr_2019 => (byte[])ResourceManager.GetObject("steamvr_2019", resourceCulture);
 
-		private static global::System.Globalization.CultureInfo resourceCulture;
+        private static CultureInfo resourceCulture;
 
-		private static global::System.Resources.ResourceManager resourceMan;
-	}
+        private static ResourceManager resourceMan;
+    }
 }

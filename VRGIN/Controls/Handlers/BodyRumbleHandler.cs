@@ -4,70 +4,61 @@ using VRGIN.Helpers;
 
 namespace VRGIN.Controls.Handlers
 {
-	public class BodyRumbleHandler : ProtectedBehaviour
-	{
-		private Controller _Controller;
+    public class BodyRumbleHandler : ProtectedBehaviour
+    {
+        private Controller _Controller;
 
-		private int _TouchCounter;
+        private int _TouchCounter;
 
-		private VelocityRumble _Rumble;
+        private VelocityRumble _Rumble;
 
-		protected override void OnStart()
-		{
-			base.OnStart();
-			_Controller = GetComponent<Controller>();
-			_Rumble = new VelocityRumble(_Controller.Tracking, 30, 10f, 3f, 1500, 10f);
-		}
+        protected override void OnStart()
+        {
+            base.OnStart();
+            _Controller = GetComponent<Controller>();
+            _Rumble = new VelocityRumble(_Controller.Tracking, 30, 10f, 3f, 1500, 10f);
+        }
 
-		protected override void OnLevel(int level)
-		{
-			base.OnLevel(level);
-			OnStop();
-		}
+        protected override void OnLevel(int level)
+        {
+            base.OnLevel(level);
+            OnStop();
+        }
 
-		protected void OnDisable()
-		{
-			OnStop();
-		}
+        protected void OnDisable()
+        {
+            OnStop();
+        }
 
-		protected override void OnUpdate()
-		{
-			base.OnUpdate();
-			_Rumble.Device = _Controller.Tracking;
-		}
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+            _Rumble.Device = _Controller.Tracking;
+        }
 
-		protected void OnTriggerEnter(Collider collider)
-		{
-			if (VR.Interpreter.IsBody(collider))
-			{
-				_TouchCounter++;
-				_Controller.StartRumble(_Rumble);
-				if (_TouchCounter == 1)
-				{
-					_Controller.StartRumble(new RumbleImpulse(1000));
-				}
-			}
-		}
+        protected void OnTriggerEnter(Collider collider)
+        {
+            if (VR.Interpreter.IsBody(collider))
+            {
+                _TouchCounter++;
+                _Controller.StartRumble(_Rumble);
+                if (_TouchCounter == 1) _Controller.StartRumble(new RumbleImpulse(1000));
+            }
+        }
 
-		protected void OnTriggerExit(Collider collider)
-		{
-			if (VR.Interpreter.IsBody(collider))
-			{
-				_TouchCounter--;
-				if (_TouchCounter == 0)
-				{
-					_Controller.StopRumble(_Rumble);
-				}
-			}
-		}
+        protected void OnTriggerExit(Collider collider)
+        {
+            if (VR.Interpreter.IsBody(collider))
+            {
+                _TouchCounter--;
+                if (_TouchCounter == 0) _Controller.StopRumble(_Rumble);
+            }
+        }
 
-		protected void OnStop()
-		{
-			_TouchCounter = 0;
-			if ((bool)_Controller)
-			{
-				_Controller.StopRumble(_Rumble);
-			}
-		}
-	}
+        protected void OnStop()
+        {
+            _TouchCounter = 0;
+            if ((bool)_Controller) _Controller.StopRumble(_Rumble);
+        }
+    }
 }

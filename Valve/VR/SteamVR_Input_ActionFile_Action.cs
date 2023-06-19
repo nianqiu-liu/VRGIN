@@ -3,168 +3,144 @@ using Valve.Newtonsoft.Json;
 
 namespace Valve.VR
 {
-	[Serializable]
-	public class SteamVR_Input_ActionFile_Action
-	{
-		[JsonIgnore]
-		private static string[] _requirementValues;
+    [Serializable]
+    public class SteamVR_Input_ActionFile_Action
+    {
+        [JsonIgnore] private static string[] _requirementValues;
 
-		public string name;
+        public string name;
 
-		public string type;
+        public string type;
 
-		public string scope;
+        public string scope;
 
-		public string skeleton;
+        public string skeleton;
 
-		public string requirement;
+        public string requirement;
 
-		private const string nameTemplate = "/actions/{0}/{1}/{2}";
+        private const string nameTemplate = "/actions/{0}/{1}/{2}";
 
-		protected const string prefix = "/actions/";
+        protected const string prefix = "/actions/";
 
-		[JsonIgnore]
-		public static string[] requirementValues
-		{
-			get
-			{
-				if (_requirementValues == null)
-				{
-					_requirementValues = Enum.GetNames(typeof(SteamVR_Input_ActionFile_Action_Requirements));
-				}
-				return _requirementValues;
-			}
-		}
+        [JsonIgnore]
+        public static string[] requirementValues
+        {
+            get
+            {
+                if (_requirementValues == null) _requirementValues = Enum.GetNames(typeof(SteamVR_Input_ActionFile_Action_Requirements));
+                return _requirementValues;
+            }
+        }
 
-		[JsonIgnore]
-		public SteamVR_Input_ActionFile_Action_Requirements requirementEnum
-		{
-			get
-			{
-				for (int i = 0; i < requirementValues.Length; i++)
-				{
-					if (string.Equals(requirementValues[i], requirement, StringComparison.CurrentCultureIgnoreCase))
-					{
-						return (SteamVR_Input_ActionFile_Action_Requirements)i;
-					}
-				}
-				return SteamVR_Input_ActionFile_Action_Requirements.suggested;
-			}
-			set
-			{
-				requirement = value.ToString();
-			}
-		}
+        [JsonIgnore]
+        public SteamVR_Input_ActionFile_Action_Requirements requirementEnum
+        {
+            get
+            {
+                for (var i = 0; i < requirementValues.Length; i++)
+                {
+                    if (string.Equals(requirementValues[i], requirement, StringComparison.CurrentCultureIgnoreCase)) return (SteamVR_Input_ActionFile_Action_Requirements)i;
+                }
 
-		[JsonIgnore]
-		public string codeFriendlyName => SteamVR_Input_ActionFile.GetCodeFriendlyName(name);
+                return SteamVR_Input_ActionFile_Action_Requirements.suggested;
+            }
+            set => requirement = value.ToString();
+        }
 
-		[JsonIgnore]
-		public string shortName => SteamVR_Input_ActionFile.GetShortName(name);
+        [JsonIgnore] public string codeFriendlyName => SteamVR_Input_ActionFile.GetCodeFriendlyName(name);
 
-		[JsonIgnore]
-		public string path
-		{
-			get
-			{
-				int num = name.LastIndexOf('/');
-				if (num != -1 && num + 1 < name.Length)
-				{
-					return name.Substring(0, num + 1);
-				}
-				return name;
-			}
-		}
+        [JsonIgnore] public string shortName => SteamVR_Input_ActionFile.GetShortName(name);
 
-		[JsonIgnore]
-		public SteamVR_ActionDirections direction
-		{
-			get
-			{
-				if (type.ToLower() == SteamVR_Input_ActionFile_ActionTypes.vibration)
-				{
-					return SteamVR_ActionDirections.Out;
-				}
-				return SteamVR_ActionDirections.In;
-			}
-		}
+        [JsonIgnore]
+        public string path
+        {
+            get
+            {
+                var num = name.LastIndexOf('/');
+                if (num != -1 && num + 1 < name.Length) return name.Substring(0, num + 1);
+                return name;
+            }
+        }
 
-		[JsonIgnore]
-		public string actionSet
-		{
-			get
-			{
-				int num = name.IndexOf('/', "/actions/".Length);
-				if (num == -1)
-				{
-					return string.Empty;
-				}
-				return name.Substring(0, num);
-			}
-		}
+        [JsonIgnore]
+        public SteamVR_ActionDirections direction
+        {
+            get
+            {
+                if (type.ToLower() == SteamVR_Input_ActionFile_ActionTypes.vibration) return SteamVR_ActionDirections.Out;
+                return SteamVR_ActionDirections.In;
+            }
+        }
 
-		public SteamVR_Input_ActionFile_Action GetCopy()
-		{
-			return new SteamVR_Input_ActionFile_Action
-			{
-				name = name,
-				type = type,
-				scope = scope,
-				skeleton = skeleton,
-				requirement = requirement
-			};
-		}
+        [JsonIgnore]
+        public string actionSet
+        {
+            get
+            {
+                var num = name.IndexOf('/', "/actions/".Length);
+                if (num == -1) return string.Empty;
+                return name.Substring(0, num);
+            }
+        }
 
-		public static string CreateNewName(string actionSet, string direction)
-		{
-			return string.Format("/actions/{0}/{1}/{2}", actionSet, direction, "NewAction");
-		}
+        public SteamVR_Input_ActionFile_Action GetCopy()
+        {
+            return new SteamVR_Input_ActionFile_Action
+            {
+                name = name,
+                type = type,
+                scope = scope,
+                skeleton = skeleton,
+                requirement = requirement
+            };
+        }
 
-		public static string CreateNewName(string actionSet, SteamVR_ActionDirections direction, string actionName)
-		{
-			return $"/actions/{actionSet}/{direction.ToString().ToLower()}/{actionName}";
-		}
+        public static string CreateNewName(string actionSet, string direction)
+        {
+            return string.Format("/actions/{0}/{1}/{2}", actionSet, direction, "NewAction");
+        }
 
-		public static SteamVR_Input_ActionFile_Action CreateNew(string actionSet, SteamVR_ActionDirections direction, string actionType)
-		{
-			return new SteamVR_Input_ActionFile_Action
-			{
-				name = CreateNewName(actionSet, direction.ToString().ToLower()),
-				type = actionType
-			};
-		}
+        public static string CreateNewName(string actionSet, SteamVR_ActionDirections direction, string actionName)
+        {
+            return $"/actions/{actionSet}/{direction.ToString().ToLower()}/{actionName}";
+        }
 
-		public void SetNewActionSet(string newSetName)
-		{
-			name = $"/actions/{newSetName}/{direction.ToString().ToLower()}/{shortName}";
-		}
+        public static SteamVR_Input_ActionFile_Action CreateNew(string actionSet, SteamVR_ActionDirections direction, string actionType)
+        {
+            return new SteamVR_Input_ActionFile_Action
+            {
+                name = CreateNewName(actionSet, direction.ToString().ToLower()),
+                type = actionType
+            };
+        }
 
-		public override string ToString()
-		{
-			return shortName;
-		}
+        public void SetNewActionSet(string newSetName)
+        {
+            name = $"/actions/{newSetName}/{direction.ToString().ToLower()}/{shortName}";
+        }
 
-		public override bool Equals(object obj)
-		{
-			if (obj is SteamVR_Input_ActionFile_Action)
-			{
-				SteamVR_Input_ActionFile_Action steamVR_Input_ActionFile_Action = (SteamVR_Input_ActionFile_Action)obj;
-				if (this == obj)
-				{
-					return true;
-				}
-				if (name == steamVR_Input_ActionFile_Action.name && type == steamVR_Input_ActionFile_Action.type && skeleton == steamVR_Input_ActionFile_Action.skeleton && requirement == steamVR_Input_ActionFile_Action.requirement)
-				{
-					return true;
-				}
-				return false;
-			}
-			return base.Equals(obj);
-		}
+        public override string ToString()
+        {
+            return shortName;
+        }
 
-		public override int GetHashCode()
-		{
-			return base.GetHashCode();
-		}
-	}
+        public override bool Equals(object obj)
+        {
+            if (obj is SteamVR_Input_ActionFile_Action)
+            {
+                var steamVR_Input_ActionFile_Action = (SteamVR_Input_ActionFile_Action)obj;
+                if (this == obj) return true;
+                if (name == steamVR_Input_ActionFile_Action.name && type == steamVR_Input_ActionFile_Action.type && skeleton == steamVR_Input_ActionFile_Action.skeleton &&
+                    requirement == steamVR_Input_ActionFile_Action.requirement) return true;
+                return false;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+    }
 }

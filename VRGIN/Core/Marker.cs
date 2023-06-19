@@ -2,7 +2,5 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
-	public class Marker : MonoBehaviour
-	{
-	}
+    public class Marker : MonoBehaviour { }
 }

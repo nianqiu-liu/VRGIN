@@ -6,63 +6,55 @@ using VRGIN.Helpers;
 
 namespace VRGIN.Controls
 {
-	public class RumbleManager : ProtectedBehaviour
-	{
-		private const float MILLI_TO_SECONDS = 0.001f;
+    public class RumbleManager : ProtectedBehaviour
+    {
+        private const float MILLI_TO_SECONDS = 0.001f;
 
-		public const float MIN_INTERVAL = 0.0050000004f;
+        public const float MIN_INTERVAL = 0.0050000004f;
 
-		private HashSet<IRumbleSession> _RumbleSessions = new HashSet<IRumbleSession>();
+        private HashSet<IRumbleSession> _RumbleSessions = new HashSet<IRumbleSession>();
 
-		private float _LastImpulse;
+        private float _LastImpulse;
 
-		private Controller _Controller;
+        private Controller _Controller;
 
-		protected override void OnStart()
-		{
-			base.OnStart();
-			_Controller = GetComponent<Controller>();
-		}
+        protected override void OnStart()
+        {
+            base.OnStart();
+            _Controller = GetComponent<Controller>();
+        }
 
-		protected virtual void OnDisable()
-		{
-			_RumbleSessions.Clear();
-		}
+        protected virtual void OnDisable()
+        {
+            _RumbleSessions.Clear();
+        }
 
-		protected override void OnUpdate()
-		{
-			base.OnUpdate();
-			if (_RumbleSessions.Count <= 0)
-			{
-				return;
-			}
-			IRumbleSession rumbleSession = _RumbleSessions.Max();
-			float num = Time.unscaledTime - _LastImpulse;
-			if (!_Controller.Tracking.isValid || !(num >= rumbleSession.MilliInterval * 0.001f) || !(num > 0.0050000004f))
-			{
-				return;
-			}
-			if (rumbleSession.IsOver)
-			{
-				_RumbleSessions.Remove(rumbleSession);
-				return;
-			}
-			if (VR.Settings.Rumble)
-			{
-				_Controller.Input.TriggerHapticPulse(rumbleSession.MicroDuration);
-			}
-			_LastImpulse = Time.unscaledTime;
-			rumbleSession.Consume();
-		}
+        protected override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (_RumbleSessions.Count <= 0) return;
+            var rumbleSession = _RumbleSessions.Max();
+            var num = Time.unscaledTime - _LastImpulse;
+            if (!_Controller.Tracking.isValid || !(num >= rumbleSession.MilliInterval * 0.001f) || !(num > 0.0050000004f)) return;
+            if (rumbleSession.IsOver)
+            {
+                _RumbleSessions.Remove(rumbleSession);
+                return;
+            }
 
-		public void StartRumble(IRumbleSession session)
-		{
-			_RumbleSessions.Add(session);
-		}
+            if (VR.Settings.Rumble) _Controller.Input.TriggerHapticPulse(rumbleSession.MicroDuration);
+            _LastImpulse = Time.unscaledTime;
+            rumbleSession.Consume();
+        }
 
-		internal void StopRumble(IRumbleSession session)
-		{
-			_RumbleSessions.Remove(session);
-		}
-	}
+        public void StartRumble(IRumbleSession session)
+        {
+            _RumbleSessions.Add(session);
+        }
+
+        internal void StopRumble(IRumbleSession session)
+        {
+            _RumbleSessions.Remove(session);
+        }
+    }
 }

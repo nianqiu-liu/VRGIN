@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
-	public class InitializeCameraEventArgs : EventArgs
-	{
-		public readonly Camera Camera;
+    public class InitializeCameraEventArgs : EventArgs
+    {
+        public readonly Camera Camera;
 
-		public readonly Camera Blueprint;
+        public readonly Camera Blueprint;
 
-		public InitializeCameraEventArgs(Camera camera, Camera blueprint)
-		{
-			Camera = camera;
-			Blueprint = blueprint;
-		}
-	}
+        public InitializeCameraEventArgs(Camera camera, Camera blueprint)
+        {
+            Camera = camera;
+            Blueprint = blueprint;
+        }
+    }
 }

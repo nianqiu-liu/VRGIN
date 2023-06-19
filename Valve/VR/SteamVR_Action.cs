@@ -3,347 +3,309 @@ using UnityEngine;
 
 namespace Valve.VR
 {
-	[Serializable]
-	public abstract class SteamVR_Action<SourceMap, SourceElement> : SteamVR_Action, ISteamVR_Action, ISteamVR_Action_Source where SourceMap : SteamVR_Action_Source_Map<SourceElement>, new() where SourceElement : SteamVR_Action_Source, new()
-	{
-		[NonSerialized]
-		protected SourceMap sourceMap;
+    [Serializable]
+    public abstract class SteamVR_Action<SourceMap, SourceElement> : SteamVR_Action, ISteamVR_Action, ISteamVR_Action_Source
+        where SourceMap : SteamVR_Action_Source_Map<SourceElement>, new() where SourceElement : SteamVR_Action_Source, new()
+    {
+        [NonSerialized] protected SourceMap sourceMap;
 
-		[NonSerialized]
-		protected bool initialized;
+        [NonSerialized] protected bool initialized;
 
-		public virtual SourceElement this[SteamVR_Input_Sources inputSource] => sourceMap[inputSource];
+        public virtual SourceElement this[SteamVR_Input_Sources inputSource] => sourceMap[inputSource];
 
-		public override string fullPath => sourceMap.fullPath;
+        public override string fullPath => sourceMap.fullPath;
 
-		public override ulong handle => sourceMap.handle;
+        public override ulong handle => sourceMap.handle;
 
-		public override SteamVR_ActionSet actionSet => sourceMap.actionSet;
+        public override SteamVR_ActionSet actionSet => sourceMap.actionSet;
 
-		public override SteamVR_ActionDirections direction => sourceMap.direction;
+        public override SteamVR_ActionDirections direction => sourceMap.direction;
 
-		public override bool active => sourceMap[SteamVR_Input_Sources.Any].active;
+        public override bool active => sourceMap[SteamVR_Input_Sources.Any].active;
 
-		public override bool lastActive => sourceMap[SteamVR_Input_Sources.Any].lastActive;
+        public override bool lastActive => sourceMap[SteamVR_Input_Sources.Any].lastActive;
 
-		public override bool activeBinding => sourceMap[SteamVR_Input_Sources.Any].activeBinding;
+        public override bool activeBinding => sourceMap[SteamVR_Input_Sources.Any].activeBinding;
 
-		public override bool lastActiveBinding => sourceMap[SteamVR_Input_Sources.Any].lastActiveBinding;
+        public override bool lastActiveBinding => sourceMap[SteamVR_Input_Sources.Any].lastActiveBinding;
 
-		public override void PreInitialize(string newActionPath)
-		{
-			actionPath = newActionPath;
-			sourceMap = new SourceMap();
-			sourceMap.PreInitialize(this, actionPath);
-			initialized = true;
-		}
+        public override void PreInitialize(string newActionPath)
+        {
+            actionPath = newActionPath;
+            sourceMap = new SourceMap();
+            sourceMap.PreInitialize(this, actionPath);
+            initialized = true;
+        }
 
-		protected override void CreateUninitialized(string newActionPath, bool caseSensitive)
-		{
-			actionPath = newActionPath;
-			sourceMap = new SourceMap();
-			sourceMap.PreInitialize(this, actionPath, false);
-			needsReinit = true;
-			initialized = false;
-		}
+        protected override void CreateUninitialized(string newActionPath, bool caseSensitive)
+        {
+            actionPath = newActionPath;
+            sourceMap = new SourceMap();
+            sourceMap.PreInitialize(this, actionPath, false);
+            needsReinit = true;
+            initialized = false;
+        }
 
-		protected override void CreateUninitialized(string newActionSet, SteamVR_ActionDirections direction, string newAction, bool caseSensitive)
-		{
-			actionPath = SteamVR_Input_ActionFile_Action.CreateNewName(newActionSet, direction, newAction);
-			sourceMap = new SourceMap();
-			sourceMap.PreInitialize(this, actionPath, false);
-			needsReinit = true;
-			initialized = false;
-		}
+        protected override void CreateUninitialized(string newActionSet, SteamVR_ActionDirections direction, string newAction, bool caseSensitive)
+        {
+            actionPath = SteamVR_Input_ActionFile_Action.CreateNewName(newActionSet, direction, newAction);
+            sourceMap = new SourceMap();
+            sourceMap.PreInitialize(this, actionPath, false);
+            needsReinit = true;
+            initialized = false;
+        }
 
-		public override string TryNeedsInitData()
-		{
-			if (needsReinit && actionPath != null)
-			{
-				SteamVR_Action steamVR_Action = SteamVR_Action.FindExistingActionForPartialPath(actionPath);
-				if (!(steamVR_Action == null))
-				{
-					actionPath = steamVR_Action.fullPath;
-					sourceMap = (SourceMap)steamVR_Action.GetSourceMap();
-					initialized = true;
-					needsReinit = false;
-					return actionPath;
-				}
-				sourceMap = null;
-			}
-			return null;
-		}
+        public override string TryNeedsInitData()
+        {
+            if (needsReinit && actionPath != null)
+            {
+                var steamVR_Action = FindExistingActionForPartialPath(actionPath);
+                if (!(steamVR_Action == null))
+                {
+                    actionPath = steamVR_Action.fullPath;
+                    sourceMap = (SourceMap)steamVR_Action.GetSourceMap();
+                    initialized = true;
+                    needsReinit = false;
+                    return actionPath;
+                }
 
-		public override void Initialize(bool createNew = false, bool throwErrors = true)
-		{
-			if (needsReinit)
-			{
-				TryNeedsInitData();
-			}
-			if (createNew)
-			{
-				sourceMap.Initialize();
-			}
-			else
-			{
-				sourceMap = SteamVR_Input.GetActionDataFromPath<SourceMap>(actionPath);
-				_ = sourceMap;
-			}
-			initialized = true;
-		}
+                sourceMap = null;
+            }
 
-		public override SteamVR_Action_Source_Map GetSourceMap()
-		{
-			return sourceMap;
-		}
+            return null;
+        }
 
-		protected override void InitializeCopy(string newActionPath, SteamVR_Action_Source_Map newData)
-		{
-			actionPath = newActionPath;
-			sourceMap = (SourceMap)newData;
-			initialized = true;
-		}
+        public override void Initialize(bool createNew = false, bool throwErrors = true)
+        {
+            if (needsReinit) TryNeedsInitData();
+            if (createNew)
+                sourceMap.Initialize();
+            else
+            {
+                sourceMap = SteamVR_Input.GetActionDataFromPath<SourceMap>(actionPath);
+                _ = sourceMap;
+            }
 
-		protected void InitAfterDeserialize()
-		{
-			if (sourceMap != null)
-			{
-				if (sourceMap.fullPath != actionPath)
-				{
-					needsReinit = true;
-					TryNeedsInitData();
-				}
-				if (string.IsNullOrEmpty(actionPath))
-				{
-					sourceMap = null;
-				}
-			}
-			if (!initialized)
-			{
-				Initialize(false, false);
-			}
-		}
+            initialized = true;
+        }
 
-		public override bool GetActive(SteamVR_Input_Sources inputSource)
-		{
-			return sourceMap[inputSource].active;
-		}
+        public override SteamVR_Action_Source_Map GetSourceMap()
+        {
+            return sourceMap;
+        }
 
-		public override bool GetActiveBinding(SteamVR_Input_Sources inputSource)
-		{
-			return sourceMap[inputSource].activeBinding;
-		}
+        protected override void InitializeCopy(string newActionPath, SteamVR_Action_Source_Map newData)
+        {
+            actionPath = newActionPath;
+            sourceMap = (SourceMap)newData;
+            initialized = true;
+        }
 
-		public override bool GetLastActive(SteamVR_Input_Sources inputSource)
-		{
-			return sourceMap[inputSource].lastActive;
-		}
+        protected void InitAfterDeserialize()
+        {
+            if (sourceMap != null)
+            {
+                if (sourceMap.fullPath != actionPath)
+                {
+                    needsReinit = true;
+                    TryNeedsInitData();
+                }
 
-		public override bool GetLastActiveBinding(SteamVR_Input_Sources inputSource)
-		{
-			return sourceMap[inputSource].lastActiveBinding;
-		}
-	}
-	[Serializable]
-	public abstract class SteamVR_Action : IEquatable<SteamVR_Action>, ISteamVR_Action, ISteamVR_Action_Source
-	{
-		[SerializeField]
-		protected string actionPath;
+                if (string.IsNullOrEmpty(actionPath)) sourceMap = null;
+            }
 
-		[SerializeField]
-		protected bool needsReinit;
+            if (!initialized) Initialize(false, false);
+        }
 
-		public static bool startUpdatingSourceOnAccess = true;
+        public override bool GetActive(SteamVR_Input_Sources inputSource)
+        {
+            return sourceMap[inputSource].active;
+        }
 
-		[NonSerialized]
-		private string cachedShortName;
+        public override bool GetActiveBinding(SteamVR_Input_Sources inputSource)
+        {
+            return sourceMap[inputSource].activeBinding;
+        }
 
-		public abstract string fullPath { get; }
+        public override bool GetLastActive(SteamVR_Input_Sources inputSource)
+        {
+            return sourceMap[inputSource].lastActive;
+        }
 
-		public abstract ulong handle { get; }
+        public override bool GetLastActiveBinding(SteamVR_Input_Sources inputSource)
+        {
+            return sourceMap[inputSource].lastActiveBinding;
+        }
+    }
 
-		public abstract SteamVR_ActionSet actionSet { get; }
+    [Serializable]
+    public abstract class SteamVR_Action : IEquatable<SteamVR_Action>, ISteamVR_Action, ISteamVR_Action_Source
+    {
+        [SerializeField] protected string actionPath;
 
-		public abstract SteamVR_ActionDirections direction { get; }
+        [SerializeField] protected bool needsReinit;
 
-		public bool setActive => actionSet.IsActive(SteamVR_Input_Sources.Any);
+        public static bool startUpdatingSourceOnAccess = true;
 
-		public abstract bool active { get; }
+        [NonSerialized] private string cachedShortName;
 
-		public abstract bool activeBinding { get; }
+        public abstract string fullPath { get; }
 
-		public abstract bool lastActive { get; }
+        public abstract ulong handle { get; }
 
-		public abstract bool lastActiveBinding { get; }
+        public abstract SteamVR_ActionSet actionSet { get; }
 
-		public SteamVR_Action()
-		{
-		}
+        public abstract SteamVR_ActionDirections direction { get; }
 
-		public static CreateType Create<CreateType>(string newActionPath) where CreateType : SteamVR_Action, new()
-		{
-			CreateType val = new CreateType();
-			val.PreInitialize(newActionPath);
-			return val;
-		}
+        public bool setActive => actionSet.IsActive(SteamVR_Input_Sources.Any);
 
-		public static CreateType CreateUninitialized<CreateType>(string setName, SteamVR_ActionDirections direction, string newActionName, bool caseSensitive) where CreateType : SteamVR_Action, new()
-		{
-			CreateType val = new CreateType();
-			val.CreateUninitialized(setName, direction, newActionName, caseSensitive);
-			return val;
-		}
+        public abstract bool active { get; }
 
-		public static CreateType CreateUninitialized<CreateType>(string actionPath, bool caseSensitive) where CreateType : SteamVR_Action, new()
-		{
-			CreateType val = new CreateType();
-			val.CreateUninitialized(actionPath, caseSensitive);
-			return val;
-		}
+        public abstract bool activeBinding { get; }
 
-		public CreateType GetCopy<CreateType>() where CreateType : SteamVR_Action, new()
-		{
-			if (SteamVR_Input.ShouldMakeCopy())
-			{
-				CreateType val = new CreateType();
-				val.InitializeCopy(actionPath, GetSourceMap());
-				return val;
-			}
-			return (CreateType)this;
-		}
+        public abstract bool lastActive { get; }
 
-		public abstract string TryNeedsInitData();
+        public abstract bool lastActiveBinding { get; }
 
-		protected abstract void InitializeCopy(string newActionPath, SteamVR_Action_Source_Map newData);
+        public SteamVR_Action() { }
 
-		public abstract void PreInitialize(string newActionPath);
+        public static CreateType Create<CreateType>(string newActionPath) where CreateType : SteamVR_Action, new()
+        {
+            var val = new CreateType();
+            val.PreInitialize(newActionPath);
+            return val;
+        }
 
-		protected abstract void CreateUninitialized(string newActionPath, bool caseSensitive);
+        public static CreateType CreateUninitialized<CreateType>(string setName, SteamVR_ActionDirections direction, string newActionName, bool caseSensitive) where CreateType : SteamVR_Action, new()
+        {
+            var val = new CreateType();
+            val.CreateUninitialized(setName, direction, newActionName, caseSensitive);
+            return val;
+        }
 
-		protected abstract void CreateUninitialized(string newActionSet, SteamVR_ActionDirections direction, string newAction, bool caseSensitive);
+        public static CreateType CreateUninitialized<CreateType>(string actionPath, bool caseSensitive) where CreateType : SteamVR_Action, new()
+        {
+            var val = new CreateType();
+            val.CreateUninitialized(actionPath, caseSensitive);
+            return val;
+        }
 
-		public abstract void Initialize(bool createNew = false, bool throwNotSetError = true);
+        public CreateType GetCopy<CreateType>() where CreateType : SteamVR_Action, new()
+        {
+            if (SteamVR_Input.ShouldMakeCopy())
+            {
+                var val = new CreateType();
+                val.InitializeCopy(actionPath, GetSourceMap());
+                return val;
+            }
 
-		public abstract float GetTimeLastChanged(SteamVR_Input_Sources inputSource);
+            return (CreateType)this;
+        }
 
-		public abstract SteamVR_Action_Source_Map GetSourceMap();
+        public abstract string TryNeedsInitData();
 
-		public abstract bool GetActive(SteamVR_Input_Sources inputSource);
+        protected abstract void InitializeCopy(string newActionPath, SteamVR_Action_Source_Map newData);
 
-		public bool GetSetActive(SteamVR_Input_Sources inputSource)
-		{
-			return actionSet.IsActive(inputSource);
-		}
+        public abstract void PreInitialize(string newActionPath);
 
-		public abstract bool GetActiveBinding(SteamVR_Input_Sources inputSource);
+        protected abstract void CreateUninitialized(string newActionPath, bool caseSensitive);
 
-		public abstract bool GetLastActive(SteamVR_Input_Sources inputSource);
+        protected abstract void CreateUninitialized(string newActionSet, SteamVR_ActionDirections direction, string newAction, bool caseSensitive);
 
-		public abstract bool GetLastActiveBinding(SteamVR_Input_Sources inputSource);
+        public abstract void Initialize(bool createNew = false, bool throwNotSetError = true);
 
-		public string GetPath()
-		{
-			return actionPath;
-		}
+        public abstract float GetTimeLastChanged(SteamVR_Input_Sources inputSource);
 
-		public abstract bool IsUpdating(SteamVR_Input_Sources inputSource);
+        public abstract SteamVR_Action_Source_Map GetSourceMap();
 
-		public override int GetHashCode()
-		{
-			if (actionPath == null)
-			{
-				return 0;
-			}
-			return actionPath.GetHashCode();
-		}
+        public abstract bool GetActive(SteamVR_Input_Sources inputSource);
 
-		public bool Equals(SteamVR_Action other)
-		{
-			if ((object)other == null)
-			{
-				return false;
-			}
-			return actionPath == other.actionPath;
-		}
+        public bool GetSetActive(SteamVR_Input_Sources inputSource)
+        {
+            return actionSet.IsActive(inputSource);
+        }
 
-		public override bool Equals(object other)
-		{
-			if (other == null)
-			{
-				if (string.IsNullOrEmpty(actionPath))
-				{
-					return true;
-				}
-				if (GetSourceMap() == null)
-				{
-					return true;
-				}
-				return false;
-			}
-			if (this == other)
-			{
-				return true;
-			}
-			if (other is SteamVR_Action)
-			{
-				return Equals((SteamVR_Action)other);
-			}
-			return false;
-		}
+        public abstract bool GetActiveBinding(SteamVR_Input_Sources inputSource);
 
-		public static bool operator !=(SteamVR_Action action1, SteamVR_Action action2)
-		{
-			return !(action1 == action2);
-		}
+        public abstract bool GetLastActive(SteamVR_Input_Sources inputSource);
 
-		public static bool operator ==(SteamVR_Action action1, SteamVR_Action action2)
-		{
-			bool flag = (object)action1 == null || string.IsNullOrEmpty(action1.actionPath) || action1.GetSourceMap() == null;
-			bool flag2 = (object)action2 == null || string.IsNullOrEmpty(action2.actionPath) || action2.GetSourceMap() == null;
-			if (flag && flag2)
-			{
-				return true;
-			}
-			if (flag != flag2)
-			{
-				return false;
-			}
-			return action1.Equals(action2);
-		}
+        public abstract bool GetLastActiveBinding(SteamVR_Input_Sources inputSource);
 
-		public static SteamVR_Action FindExistingActionForPartialPath(string path)
-		{
-			if (string.IsNullOrEmpty(path) || path.IndexOf('/') == -1)
-			{
-				return null;
-			}
-			string[] array = path.Split('/');
-			if (array.Length >= 5 && string.IsNullOrEmpty(array[2]))
-			{
-				string actionSetName = array[2];
-				string actionName = array[4];
-				return SteamVR_Input.GetBaseAction(actionSetName, actionName);
-			}
-			return SteamVR_Input.GetBaseActionFromPath(path);
-		}
+        public string GetPath()
+        {
+            return actionPath;
+        }
 
-		public string GetShortName()
-		{
-			if (cachedShortName == null)
-			{
-				cachedShortName = SteamVR_Input_ActionFile.GetShortName(fullPath);
-			}
-			return cachedShortName;
-		}
+        public abstract bool IsUpdating(SteamVR_Input_Sources inputSource);
 
-		public void ShowOrigins()
-		{
-			OpenVR.Input.ShowActionOrigins(actionSet.handle, handle);
-		}
+        public override int GetHashCode()
+        {
+            if (actionPath == null) return 0;
+            return actionPath.GetHashCode();
+        }
 
-		public void HideOrigins()
-		{
-			OpenVR.Input.ShowActionOrigins(0uL, 0uL);
-		}
-	}
+        public bool Equals(SteamVR_Action other)
+        {
+            if ((object)other == null) return false;
+            return actionPath == other.actionPath;
+        }
+
+        public override bool Equals(object other)
+        {
+            if (other == null)
+            {
+                if (string.IsNullOrEmpty(actionPath)) return true;
+                if (GetSourceMap() == null) return true;
+                return false;
+            }
+
+            if (this == other) return true;
+            if (other is SteamVR_Action) return Equals((SteamVR_Action)other);
+            return false;
+        }
+
+        public static bool operator !=(SteamVR_Action action1, SteamVR_Action action2)
+        {
+            return !(action1 == action2);
+        }
+
+        public static bool operator ==(SteamVR_Action action1, SteamVR_Action action2)
+        {
+            var flag = (object)action1 == null || string.IsNullOrEmpty(action1.actionPath) || action1.GetSourceMap() == null;
+            var flag2 = (object)action2 == null || string.IsNullOrEmpty(action2.actionPath) || action2.GetSourceMap() == null;
+            if (flag && flag2) return true;
+            if (flag != flag2) return false;
+            return action1.Equals(action2);
+        }
+
+        public static SteamVR_Action FindExistingActionForPartialPath(string path)
+        {
+            if (string.IsNullOrEmpty(path) || path.IndexOf('/') == -1) return null;
+            var array = path.Split('/');
+            if (array.Length >= 5 && string.IsNullOrEmpty(array[2]))
+            {
+                var actionSetName = array[2];
+                var actionName = array[4];
+                return SteamVR_Input.GetBaseAction(actionSetName, actionName);
+            }
+
+            return SteamVR_Input.GetBaseActionFromPath(path);
+        }
+
+        public string GetShortName()
+        {
+            if (cachedShortName == null) cachedShortName = SteamVR_Input_ActionFile.GetShortName(fullPath);
+            return cachedShortName;
+        }
+
+        public void ShowOrigins()
+        {
+            OpenVR.Input.ShowActionOrigins(actionSet.handle, handle);
+        }
+
+        public void HideOrigins()
+        {
+            OpenVR.Input.ShowActionOrigins(0uL, 0uL);
+        }
+    }
 }

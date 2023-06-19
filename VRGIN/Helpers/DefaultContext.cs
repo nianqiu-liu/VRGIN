@@ -6,64 +6,64 @@ using VRGIN.Visuals;
 
 namespace VRGIN.Helpers
 {
-	public class DefaultContext : IVRManagerContext
-	{
-		private IMaterialPalette _Materials;
+    public class DefaultContext : IVRManagerContext
+    {
+        private IMaterialPalette _Materials;
 
-		private VRSettings _Settings;
+        private VRSettings _Settings;
 
-		public virtual bool ConfineMouse => true;
+        public virtual bool ConfineMouse => true;
 
-		public virtual bool EnforceDefaultGUIMaterials => false;
+        public virtual bool EnforceDefaultGUIMaterials => false;
 
-		public virtual bool GUIAlternativeSortingMode => false;
+        public virtual bool GUIAlternativeSortingMode => false;
 
-		public virtual float GuiFarClipPlane => 10000f;
+        public virtual float GuiFarClipPlane => 10000f;
 
-		public virtual string GuiLayer => "Default";
+        public virtual string GuiLayer => "Default";
 
-		public virtual float GuiNearClipPlane => -10000f;
+        public virtual float GuiNearClipPlane => -10000f;
 
-		public virtual int IgnoreMask => 0;
+        public virtual int IgnoreMask => 0;
 
-		public virtual string InvisibleLayer => "Ignore Raycast";
+        public virtual string InvisibleLayer => "Ignore Raycast";
 
-		public IMaterialPalette Materials => _Materials;
+        public IMaterialPalette Materials => _Materials;
 
-		public virtual float NearClipPlane => 0.1f;
+        public virtual float NearClipPlane => 0.1f;
 
-		public virtual GUIType PreferredGUI => GUIType.uGUI;
+        public virtual GUIType PreferredGUI => GUIType.uGUI;
 
-		public virtual Color PrimaryColor => Color.cyan;
+        public virtual Color PrimaryColor => Color.cyan;
 
-		public virtual VRSettings Settings => _Settings;
+        public virtual VRSettings Settings => _Settings;
 
-		public virtual bool SimulateCursor => true;
+        public virtual bool SimulateCursor => true;
 
-		public virtual string UILayer => "UI";
+        public virtual string UILayer => "UI";
 
-		public virtual int UILayerMask => LayerMask.GetMask(UILayer);
+        public virtual int UILayerMask => LayerMask.GetMask(UILayer);
 
-		public virtual float UnitToMeter => 1f;
+        public virtual float UnitToMeter => 1f;
 
-		public virtual Type VoiceCommandType => typeof(VoiceCommand);
+        public virtual Type VoiceCommandType => typeof(VoiceCommand);
 
-		public virtual bool ForceIMGUIOnScreen => false;
+        public virtual bool ForceIMGUIOnScreen => false;
 
-		public DefaultContext()
-		{
-			_Materials = CreateMaterialPalette();
-			_Settings = CreateSettings();
-		}
+        public DefaultContext()
+        {
+            _Materials = CreateMaterialPalette();
+            _Settings = CreateSettings();
+        }
 
-		protected virtual IMaterialPalette CreateMaterialPalette()
-		{
-			return new DefaultMaterialPalette();
-		}
+        protected virtual IMaterialPalette CreateMaterialPalette()
+        {
+            return new DefaultMaterialPalette();
+        }
 
-		protected virtual VRSettings CreateSettings()
-		{
-			return VRSettings.Load<VRSettings>("VRSettings.xml");
-		}
-	}
+        protected virtual VRSettings CreateSettings()
+        {
+            return VRSettings.Load<VRSettings>("VRSettings.xml");
+        }
+    }
 }

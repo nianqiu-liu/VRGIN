@@ -1,6 +1,4 @@
 namespace VRGIN.Core
 {
-	public class Logger : VRLog
-	{
-	}
+    public class Logger : VRLog { }
 }

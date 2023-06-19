@@ -4,44 +4,44 @@ using VRGIN.Visuals;
 
 namespace VRGIN.Core
 {
-	public interface IVRManagerContext
-	{
-		string GuiLayer { get; }
+    public interface IVRManagerContext
+    {
+        string GuiLayer { get; }
 
-		string UILayer { get; }
+        string UILayer { get; }
 
-		int UILayerMask { get; }
+        int UILayerMask { get; }
 
-		int IgnoreMask { get; }
+        int IgnoreMask { get; }
 
-		Color PrimaryColor { get; }
+        Color PrimaryColor { get; }
 
-		IMaterialPalette Materials { get; }
+        IMaterialPalette Materials { get; }
 
-		VRSettings Settings { get; }
+        VRSettings Settings { get; }
 
-		string InvisibleLayer { get; }
+        string InvisibleLayer { get; }
 
-		bool SimulateCursor { get; }
+        bool SimulateCursor { get; }
 
-		bool GUIAlternativeSortingMode { get; }
+        bool GUIAlternativeSortingMode { get; }
 
-		Type VoiceCommandType { get; }
+        Type VoiceCommandType { get; }
 
-		float GuiNearClipPlane { get; }
+        float GuiNearClipPlane { get; }
 
-		float GuiFarClipPlane { get; }
+        float GuiFarClipPlane { get; }
 
-		float NearClipPlane { get; }
+        float NearClipPlane { get; }
 
-		float UnitToMeter { get; }
+        float UnitToMeter { get; }
 
-		bool EnforceDefaultGUIMaterials { get; }
+        bool EnforceDefaultGUIMaterials { get; }
 
-		bool ConfineMouse { get; }
+        bool ConfineMouse { get; }
 
-		GUIType PreferredGUI { get; }
+        GUIType PreferredGUI { get; }
 
-		bool ForceIMGUIOnScreen { get; }
-	}
+        bool ForceIMGUIOnScreen { get; }
+    }
 }

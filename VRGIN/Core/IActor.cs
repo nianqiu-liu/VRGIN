@@ -2,12 +2,12 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
-	public interface IActor
-	{
-		bool IsValid { get; }
+    public interface IActor
+    {
+        bool IsValid { get; }
 
-		Transform Eyes { get; }
+        Transform Eyes { get; }
 
-		bool HasHead { get; set; }
-	}
+        bool HasHead { get; set; }
+    }
 }

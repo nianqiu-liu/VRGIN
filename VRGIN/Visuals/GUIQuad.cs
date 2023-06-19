@@ -7,106 +7,104 @@ using VRGIN.Core;
 
 namespace VRGIN.Visuals
 {
-	public class GUIQuad : ProtectedBehaviour
-	{
-		private Renderer renderer;
+    public class GUIQuad : ProtectedBehaviour
+    {
+        private Renderer renderer;
 
-		public bool IsOwned;
+        public bool IsOwned;
 
-		private IScreenGrabber _Source;
+        private IScreenGrabber _Source;
 
-		public static GUIQuad Create(IScreenGrabber source = null)
-		{
-			source = source ?? VR.GUI;
-			VRLog.Info("Create GUI");
-			GUIQuad gUIQuad = GameObject.CreatePrimitive(PrimitiveType.Quad).AddComponent<GUIQuad>();
-			gUIQuad.name = "GUIQuad";
-			if (source != VR.GUI)
-			{
-				gUIQuad.gameObject.SetActive(false);
-				gUIQuad._Source = source;
-				gUIQuad.gameObject.SetActive(true);
-			}
-			gUIQuad.UpdateGUI();
-			return gUIQuad;
-		}
+        public static GUIQuad Create(IScreenGrabber source = null)
+        {
+            source = source ?? VR.GUI;
+            VRLog.Info("Create GUI");
+            var gUIQuad = GameObject.CreatePrimitive(PrimitiveType.Quad).AddComponent<GUIQuad>();
+            gUIQuad.name = "GUIQuad";
+            if (source != VR.GUI)
+            {
+                gUIQuad.gameObject.SetActive(false);
+                gUIQuad._Source = source;
+                gUIQuad.gameObject.SetActive(true);
+            }
 
-		protected override void OnAwake()
-		{
-			renderer = GetComponent<Renderer>();
-			_Source = VR.GUI;
-			base.transform.localPosition = Vector3.zero;
-			base.transform.localRotation = Quaternion.identity;
-			base.gameObject.layer = LayerMask.NameToLayer(VRManager.Instance.Context.GuiLayer);
-		}
+            gUIQuad.UpdateGUI();
+            return gUIQuad;
+        }
 
-		protected override void OnStart()
-		{
-			base.OnStart();
-			UpdateAspect();
-		}
+        protected override void OnAwake()
+        {
+            renderer = GetComponent<Renderer>();
+            _Source = VR.GUI;
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+            gameObject.layer = LayerMask.NameToLayer(VRManager.Instance.Context.GuiLayer);
+        }
 
-		protected virtual void OnEnable()
-		{
-			if (IsGUISource())
-			{
-				VRLog.Info("Start listening to GUI ({0})", base.name);
-				GUIQuadRegistry.Register(this);
-				VR.GUI.Listen();
-			}
-		}
+        protected override void OnStart()
+        {
+            base.OnStart();
+            UpdateAspect();
+        }
 
-		protected virtual void OnDisable()
-		{
-			if (IsGUISource())
-			{
-				VRLog.Info("Stop listening to GUI ({0})", base.name);
-				GUIQuadRegistry.Unregister(this);
-				VR.GUI.Unlisten();
-			}
-		}
+        protected virtual void OnEnable()
+        {
+            if (IsGUISource())
+            {
+                VRLog.Info("Start listening to GUI ({0})", name);
+                GUIQuadRegistry.Register(this);
+                VR.GUI.Listen();
+            }
+        }
 
-		private bool IsGUISource()
-		{
-			return _Source == VR.GUI;
-		}
+        protected virtual void OnDisable()
+        {
+            if (IsGUISource())
+            {
+                VRLog.Info("Stop listening to GUI ({0})", name);
+                GUIQuadRegistry.Unregister(this);
+                VR.GUI.Unlisten();
+            }
+        }
 
-		public virtual void UpdateAspect()
-		{
-			float y = base.transform.localScale.y;
-			float x = y / (float)Screen.height * (float)Screen.width;
-			base.transform.localScale = new Vector3(x, y, 1f);
-		}
+        private bool IsGUISource()
+        {
+            return _Source == VR.GUI;
+        }
 
-		public virtual void UpdateGUI()
-		{
-			UpdateAspect();
-			if (!renderer)
-			{
-				VRLog.Warn("No renderer!");
-			}
-			try
-			{
-				renderer.receiveShadows = false;
-				renderer.shadowCastingMode = ShadowCastingMode.Off;
-				IEnumerable<RenderTexture> textures = _Source.GetTextures();
-				VRLog.Info("Updating GUI {0} with {1} textures", base.name, textures.Count());
-				if (textures.Count() >= 2)
-				{
-					renderer.material = VR.Context.Materials.UnlitTransparentCombined;
-					renderer.material.SetTexture("_MainTex", textures.FirstOrDefault());
-					renderer.material.SetTexture("_SubTex", textures.Last());
-				}
-				else
-				{
-					renderer.material = VR.Context.Materials.UnlitTransparent;
-					renderer.material.SetTexture("_MainTex", textures.FirstOrDefault());
-				}
-			}
-			catch (Exception obj)
-			{
-				VRLog.Info(obj);
-			}
-		}
-	}
+        public virtual void UpdateAspect()
+        {
+            var y = transform.localScale.y;
+            var x = y / (float)Screen.height * (float)Screen.width;
+            transform.localScale = new Vector3(x, y, 1f);
+        }
+
+        public virtual void UpdateGUI()
+        {
+            UpdateAspect();
+            if (!renderer) VRLog.Warn("No renderer!");
+            try
+            {
+                renderer.receiveShadows = false;
+                renderer.shadowCastingMode = ShadowCastingMode.Off;
+                var textures = _Source.GetTextures();
+                VRLog.Info("Updating GUI {0} with {1} textures", name, textures.Count());
+                if (textures.Count() >= 2)
+                {
+                    renderer.material = VR.Context.Materials.UnlitTransparentCombined;
+                    renderer.material.SetTexture("_MainTex", textures.FirstOrDefault());
+                    renderer.material.SetTexture("_SubTex", textures.Last());
+                }
+                else
+                {
+                    renderer.material = VR.Context.Materials.UnlitTransparent;
+                    renderer.material.SetTexture("_MainTex", textures.FirstOrDefault());
+                }
+            }
+            catch (Exception obj)
+            {
+                VRLog.Info(obj);
+            }
+        }
+    }
 }

@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
-	public class CopiedCameraEventArgs : EventArgs
-	{
-		public readonly Camera Camera;
+    public class CopiedCameraEventArgs : EventArgs
+    {
+        public readonly Camera Camera;
 
-		public CopiedCameraEventArgs(Camera camera)
-		{
-			Camera = camera;
-		}
-	}
+        public CopiedCameraEventArgs(Camera camera)
+        {
+            Camera = camera;
+        }
+    }
 }

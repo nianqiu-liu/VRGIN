@@ -3,12 +3,12 @@ using UnityEngine;
 
 namespace VRGIN.Core
 {
-	public interface IScreenGrabber
-	{
-		bool Check(Camera camera);
+    public interface IScreenGrabber
+    {
+        bool Check(Camera camera);
 
-		IEnumerable<RenderTexture> GetTextures();
+        IEnumerable<RenderTexture> GetTextures();
 
-		void OnAssign(Camera camera);
-	}
+        void OnAssign(Camera camera);
+    }
 }

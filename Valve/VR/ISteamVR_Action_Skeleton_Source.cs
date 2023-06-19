@@ -2,66 +2,66 @@ using UnityEngine;
 
 namespace Valve.VR
 {
-	public interface ISteamVR_Action_Skeleton_Source
-	{
-		EVRSkeletalTrackingLevel skeletalTrackingLevel { get; }
+    public interface ISteamVR_Action_Skeleton_Source
+    {
+        EVRSkeletalTrackingLevel skeletalTrackingLevel { get; }
 
-		Vector3[] bonePositions { get; }
+        Vector3[] bonePositions { get; }
 
-		Quaternion[] boneRotations { get; }
+        Quaternion[] boneRotations { get; }
 
-		Vector3[] lastBonePositions { get; }
+        Vector3[] lastBonePositions { get; }
 
-		Quaternion[] lastBoneRotations { get; }
+        Quaternion[] lastBoneRotations { get; }
 
-		EVRSkeletalMotionRange rangeOfMotion { get; set; }
+        EVRSkeletalMotionRange rangeOfMotion { get; set; }
 
-		EVRSkeletalTransformSpace skeletalTransformSpace { get; set; }
+        EVRSkeletalTransformSpace skeletalTransformSpace { get; set; }
 
-		bool onlyUpdateSummaryData { get; set; }
+        bool onlyUpdateSummaryData { get; set; }
 
-		float thumbCurl { get; }
+        float thumbCurl { get; }
 
-		float indexCurl { get; }
+        float indexCurl { get; }
 
-		float middleCurl { get; }
+        float middleCurl { get; }
 
-		float ringCurl { get; }
+        float ringCurl { get; }
 
-		float pinkyCurl { get; }
+        float pinkyCurl { get; }
 
-		float thumbIndexSplay { get; }
+        float thumbIndexSplay { get; }
 
-		float indexMiddleSplay { get; }
+        float indexMiddleSplay { get; }
 
-		float middleRingSplay { get; }
+        float middleRingSplay { get; }
 
-		float ringPinkySplay { get; }
+        float ringPinkySplay { get; }
 
-		float lastThumbCurl { get; }
+        float lastThumbCurl { get; }
 
-		float lastIndexCurl { get; }
+        float lastIndexCurl { get; }
 
-		float lastMiddleCurl { get; }
+        float lastMiddleCurl { get; }
 
-		float lastRingCurl { get; }
+        float lastRingCurl { get; }
 
-		float lastPinkyCurl { get; }
+        float lastPinkyCurl { get; }
 
-		float lastThumbIndexSplay { get; }
+        float lastThumbIndexSplay { get; }
 
-		float lastIndexMiddleSplay { get; }
+        float lastIndexMiddleSplay { get; }
 
-		float lastMiddleRingSplay { get; }
+        float lastMiddleRingSplay { get; }
 
-		float lastRingPinkySplay { get; }
+        float lastRingPinkySplay { get; }
 
-		float[] fingerCurls { get; }
+        float[] fingerCurls { get; }
 
-		float[] fingerSplays { get; }
+        float[] fingerSplays { get; }
 
-		float[] lastFingerCurls { get; }
+        float[] lastFingerCurls { get; }
 
-		float[] lastFingerSplays { get; }
-	}
+        float[] lastFingerSplays { get; }
+    }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VRGIN.Helpers;
 using VRGIN.Native;
@@ -166,6 +167,8 @@ namespace VRGIN.Core
             _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.Instance | BindingFlags.NonPublic);
             _Registry = _Graphics.GetValue(GraphicRegistry.instance) as IDictionary;
             DontDestroyOnLoad(gameObject);
+
+            SceneManager.sceneLoaded += SceneLoaded;
         }
 
         private bool IsUnprocessed(Canvas c)
@@ -226,10 +229,14 @@ namespace VRGIN.Core
             if (_Listeners < 0) VRLog.Warn("Numbers don't add up!");
         }
 
-        private void OnLevelWasLoaded(int level)
+        
+        private void SceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            _CheckedCameras.Clear();
-            _CameraMappings.Clear();
+            if (mode == LoadSceneMode.Single)
+            {
+                _CheckedCameras.Clear();
+                _CameraMappings.Clear();
+            }
         }
 
         internal void OnAfterGUI()

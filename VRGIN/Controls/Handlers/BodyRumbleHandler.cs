@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VRGIN.Core;
 using VRGIN.Helpers;
 
@@ -21,19 +22,23 @@ namespace VRGIN.Controls.Handlers
             base.OnStart();
             _Controller = GetComponent<Controller>();
             _Rumble = new VelocityRumble(_Controller.Tracking, 30, 10f, 3f, 1500, 10f);
+
+            SceneManager.sceneLoaded += SceneLoaded;
         }
 
-        private void OnLevelWasLoaded(int level)
+        private void SceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            try
+            if(mode == LoadSceneMode.Single && enabled)
             {
-                OnStop();
+                try
+                {
+                    OnStop();
+                }
+                catch(Exception ex)
+                {
+                    VRLog.Error(ex);
+                }
             }
-            catch(Exception ex)
-            {
-                VRLog.Error(ex);
-            }
-
         }
 
         protected void OnDisable()
@@ -69,7 +74,7 @@ namespace VRGIN.Controls.Handlers
         protected void OnStop()
         {
             _TouchCounter = 0;
-            if ((bool)_Controller) _Controller.StopRumble(_Rumble);
+            if (_Controller) _Controller.StopRumble(_Rumble);
         }
     }
 }

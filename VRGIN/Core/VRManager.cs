@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Valve.VR;
 using VRGIN.Modes;
 using WindowsInput;
@@ -80,23 +81,28 @@ namespace VRGIN.Core
 
         protected override void OnAwake()
         {
-            var hmd_TrackingSystemName = SteamVR.instance.hmd_TrackingSystemName;
+            var trackingSystemName = SteamVR.instance.hmd_TrackingSystemName;
+
             VRLog.Info("------------------------------------");
-            VRLog.Info(" Booting VR [{0}]", hmd_TrackingSystemName);
+            VRLog.Info(" Booting VR [{0}]", trackingSystemName);
             VRLog.Info("------------------------------------");
-            HMD = !(hmd_TrackingSystemName == "oculus") ? hmd_TrackingSystemName == "lighthouse" ? HMDType.Vive : HMDType.Other : HMDType.Oculus;
+
+            HMD = trackingSystemName == "oculus" ? HMDType.Oculus : trackingSystemName == "lighthouse" ? HMDType.Vive : HMDType.Other;
+
             Application.targetFrameRate = 90;
             Time.fixedDeltaTime = 1f / 90f;
             Application.runInBackground = true;
+
             DontDestroyOnLoad(SteamVR_Render.instance.gameObject);
             DontDestroyOnLoad(gameObject);
+
+            SceneManager.sceneLoaded += SceneLoaded;
         }
 
-        protected override void OnStart() { }
-
-        private void OnLevelWasLoaded(int level)
+        private void SceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            _CheckedCameras.Clear();
+            if (mode == LoadSceneMode.Single)
+                _CheckedCameras.Clear();
         }
 
         protected override void OnUpdate()

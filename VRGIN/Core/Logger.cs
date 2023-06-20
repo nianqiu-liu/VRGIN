@@ -21,46 +21,71 @@ namespace VRGIN.Core
 
         public static void Debug(string text, params object[] args)
         {
-            Log(text, args, LogMode.Debug);
+            LogInternal(text, args, LogMode.Debug);
         }
 
         public static void Info(string text, params object[] args)
         {
-            Log(text, args, LogMode.Info);
+            LogInternal(text, args, LogMode.Info);
         }
 
         public static void Warn(string text, params object[] args)
         {
-            Log(text, args, LogMode.Warning);
+            LogInternal(text, args, LogMode.Warning);
         }
 
         public static void Error(string text, params object[] args)
         {
-            Log(text, args, LogMode.Error);
+            LogInternal(text, args, LogMode.Error);
+        }
+
+        public static void Debug(string text)
+        {
+            LogInternal(text, null, LogMode.Debug);
+        }
+
+        public static void Info(string text)
+        {
+            LogInternal(text, null, LogMode.Info);
+        }
+
+        public static void Warn(string text)
+        {
+            LogInternal(text, null, LogMode.Warning);
+        }
+
+        public static void Error(string text)
+        {
+            LogInternal(text, null, LogMode.Error);
         }
 
         public static void Debug(object obj)
         {
-            Log("{0}", new object[] { obj }, LogMode.Debug);
+            LogInternal("{0}", new object[] { obj }, LogMode.Debug);
         }
 
         public static void Info(object obj)
         {
-            Log("{0}", new object[] { obj }, LogMode.Info);
+            LogInternal("{0}", new object[] { obj }, LogMode.Info);
         }
 
         public static void Warn(object obj)
         {
-            Log("{0}", new object[] { obj }, LogMode.Warning);
+            LogInternal("{0}", new object[] { obj }, LogMode.Warning);
         }
 
         public static void Error(object obj)
         {
-            Log("{0}", new object[] { obj }, LogMode.Error);
+            LogInternal("{0}", new object[] { obj }, LogMode.Error);
         }
 
-
         public static void Log(string text, object[] args, LogMode severity)
+        {
+            // LogInternal can't be called directly by game code because stack trace would be 1 shorter
+            LogInternal(text, args, severity);
+        }
+
+        private static void LogInternal(string text, object[] args, LogMode severity)
         {
             try
             {
@@ -81,6 +106,9 @@ namespace VRGIN.Core
 
     public interface ILoggerBackend
     {
+        /// <summary>
+        /// If args are null, text should be used as is. If args are not null, text and args should be passed through string.Format
+        /// </summary>
         void Log(string text, object[] args, VRLog.LogMode severity);
     }
 
@@ -124,7 +152,8 @@ namespace VRGIN.Core
                 Console.ForegroundColor = foregroundColor;
                 Console.BackgroundColor = backgroundColor;
 #endif
-                var formatted = string.Format(Format(text, severity), args);
+                var logText = args == null ? text : string.Format(text, args);
+                var formatted = Format(logText, severity);
                 Console.WriteLine(formatted);
                 _Handle.WriteLine(formatted);
 #if COLOR_SUPPORT
@@ -136,7 +165,7 @@ namespace VRGIN.Core
         {
             var trace = new StackTrace(4);
             var caller = trace.GetFrame(0);
-            return string.Format(@"[{0:HH':'mm':'ss}][{1}][{3}#{4}] {2}", DateTime.Now, mode.ToString().ToUpper(), text, caller.GetMethod().DeclaringType?.Name ?? "???", caller.GetMethod().Name, caller.GetFileLineNumber());
+            return string.Format(@"[{0:HH':'mm':'ss}][{1}][{3}#{4}] {2}", DateTime.Now, mode.ToString().ToUpper(), text, caller.GetMethod().DeclaringType?.Name ?? "???", caller.GetMethod().Name);
         }
     }
 

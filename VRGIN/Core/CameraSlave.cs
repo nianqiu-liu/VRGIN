@@ -29,6 +29,8 @@ namespace VRGIN.Core
 
         public int cullingMask { get; private set; }
 
+        public bool canBeMainCamera { get; set; }
+
         protected override void OnAwake()
         {
             base.OnAwake();

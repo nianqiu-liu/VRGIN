@@ -92,55 +92,88 @@ namespace VRGIN.Core
             DontDestroyOnLoad(go);
         }
 
-        public void Copy(Camera blueprint, bool master = false, bool hasOtherConsumers = false)
+        /// <summary>
+        /// Copies the values of a in-game camera to the VR camera.
+        /// </summary>
+        /// <param name="blueprint">The camera to copy.</param>
+        public void Copy(Camera blueprint, bool canBeMain = false, bool hasOtherConsumers = false)
         {
             VRLog.Info("Copying camera: {0}", blueprint ? blueprint.name : "NULL");
-            if(blueprint && (bool)blueprint.GetComponent<CameraSlave>())
+
+            if (blueprint && blueprint.GetComponent<CameraSlave>())
             {
                 VRLog.Warn("Is already slave -- NOOP");
                 return;
             }
 
-            if (master && UseNewCamera(blueprint))
+            if (canBeMain && UseNewCamera(blueprint))
             {
-                _Blueprint = blueprint ?? _Camera;
-                ApplyToCameras(delegate(Camera targetCamera)
-                {
-                    targetCamera.nearClipPlane = VR.Context.NearClipPlane;
-                    targetCamera.farClipPlane = Mathf.Max(Blueprint.farClipPlane, MIN_FAR_CLIP_PLANE);
-                    targetCamera.clearFlags = Blueprint.clearFlags == CameraClearFlags.Skybox ? CameraClearFlags.Skybox : CameraClearFlags.Color;
-                    targetCamera.renderingPath = Blueprint.renderingPath;
-                    targetCamera.clearStencilAfterLightingPass = Blueprint.clearStencilAfterLightingPass;
-                    targetCamera.depthTextureMode = Blueprint.depthTextureMode;
-                    targetCamera.layerCullDistances = Blueprint.layerCullDistances;
-                    targetCamera.layerCullSpherical = Blueprint.layerCullSpherical;
-                    targetCamera.useOcclusionCulling = Blueprint.useOcclusionCulling;
-                    targetCamera.allowHDR = Blueprint.allowHDR;
-                    targetCamera.backgroundColor = Blueprint.backgroundColor;
-                    var component2 = Blueprint.GetComponent<Skybox>();
-                    if (component2 != null)
-                    {
-                        var skybox = targetCamera.gameObject.GetComponent<Skybox>();
-                        if (skybox == null) skybox = skybox.gameObject.AddComponent<Skybox>();
-                        skybox.material = component2.material;
-                    }
-                });
+                ChangeBlueprint(blueprint);
             }
 
             if(blueprint)
             {
-                blueprint.gameObject.AddComponent<CameraSlave>();
-                var component = blueprint.GetComponent<AudioListener>();
-                if(component) Destroy(component);
+                blueprint.gameObject.AddComponent<CameraSlave>().canBeMainCamera = canBeMain;
+
+                // Highlander principle
+                var listener = blueprint.GetComponent<AudioListener>();
+                if (listener)
+                {
+                    Destroy(listener);
+                }
 
                 // Prevent Unity from moving this camera around.
                 blueprint.stereoTargetEye = StereoTargetEyeMask.None;
 
-                if (!hasOtherConsumers && blueprint.targetTexture == null && VR.Interpreter.IsIrrelevantCamera(blueprint)) blueprint.gameObject.AddComponent<CameraKiller>();
+                if (!hasOtherConsumers && blueprint.targetTexture == null && VR.Interpreter.IsIrrelevantCamera(blueprint))
+                {
+                    //StartCoroutine(ExecuteDelayed(delegate { CopyFX(Blueprint); }));
+                    //CopyFX(Blueprint);
+
+                    blueprint.gameObject.AddComponent<CameraKiller>();
+                    //blueprint.enabled = false;
+                    //blueprint.nearClipPlane = Blueprint.farClipPlane = 0;
+
+                    //Blueprint.targetTexture = _MiniTexture;
+                    //Blueprint.gameObject.AddComponent<BlacklistThrottler>();
+                }
             }
 
-            if (master) InitializeCamera(this, new InitializeCameraEventArgs(GetComponent<Camera>(), Blueprint));
+            if(canBeMain)
+            {
+                // Hook
+                InitializeCamera(this, new InitializeCameraEventArgs(GetComponent<Camera>(), Blueprint));
+            }
+
             CopiedCamera(this, new CopiedCameraEventArgs(blueprint));
+        }
+
+        private void ChangeBlueprint(Camera blueprint)
+        {
+            _Blueprint = blueprint;
+
+            var camera = SteamCam.GetComponent<Camera>();
+            camera.nearClipPlane = VR.Context.NearClipPlane;
+            camera.farClipPlane = Mathf.Max(Blueprint.farClipPlane, MIN_FAR_CLIP_PLANE);
+            camera.clearFlags = Blueprint.clearFlags == CameraClearFlags.Skybox ? CameraClearFlags.Skybox : CameraClearFlags.SolidColor;
+            camera.renderingPath = Blueprint.renderingPath;
+            camera.clearStencilAfterLightingPass = Blueprint.clearStencilAfterLightingPass;
+            camera.depthTextureMode = Blueprint.depthTextureMode;
+            camera.layerCullDistances = Blueprint.layerCullDistances;
+            camera.layerCullSpherical = Blueprint.layerCullSpherical;
+            camera.useOcclusionCulling = Blueprint.useOcclusionCulling;
+            camera.allowHDR = Blueprint.allowHDR;
+
+            camera.backgroundColor = Blueprint.backgroundColor;
+
+            var skybox = Blueprint.GetComponent<Skybox>();
+            if (skybox != null)
+            {
+                var vrSkybox = camera.gameObject.GetComponent<Skybox>();
+                if (vrSkybox == null) vrSkybox = vrSkybox.gameObject.AddComponent<Skybox>();
+
+                vrSkybox.material = skybox.material;
+            }
         }
 
         private bool UseNewCamera(Camera blueprint)
@@ -156,12 +189,26 @@ namespace VRGIN.Core
 
         private void UpdateCameraConfig()
         {
-            var num = Slaves.Aggregate(0, (int cull, CameraSlave cam) => cull | cam.cullingMask);
-            num |= VR.Interpreter.DefaultCullingMask;
-            num &= ~LayerMask.GetMask(VR.Context.UILayer, VR.Context.InvisibleLayer);
-            num &= ~VR.Context.IgnoreMask;
-            VRLog.Info("The camera sees {0} ({1})", string.Join(", ", UnityHelper.GetLayerNames(num)), string.Join(", ", Slaves.Select((CameraSlave s) => s.name).ToArray()));
-            GetComponent<Camera>().cullingMask = num;
+            int cullingMask = Slaves.Aggregate(0, (cull, cam) => cull | cam.cullingMask);
+
+            // Remove layers that are captured by other cameras (see VRGUI)
+            cullingMask |= VR.Interpreter.DefaultCullingMask;
+            cullingMask &= ~(LayerMask.GetMask(VR.Context.UILayer, VR.Context.InvisibleLayer));
+            cullingMask &= ~(VR.Context.IgnoreMask);
+
+            VRLog.Info("The camera sees {0} ({1})", string.Join(", ", UnityHelper.GetLayerNames(cullingMask)), string.Join(", ", Slaves.Select(s => s.name).ToArray()));
+
+            GetComponent<Camera>().cullingMask = cullingMask;
+
+            if (!Slaves.Any((slave) => slave.Camera == _Blueprint))
+            {
+                // Try to find a new main camera.
+                var bestSlave = Slaves.Reverse().FirstOrDefault((slave) => slave.canBeMainCamera);
+                if (bestSlave)
+                {
+                    ChangeBlueprint(bestSlave.Camera);
+                }
+            }
         }
 
         public void CopyFX(Camera blueprint)
@@ -198,11 +245,6 @@ namespace VRGIN.Core
             }
 
             VRLog.Info("{0} components before the additions, {1} after", num, target.GetComponents<Component>().Length);
-        }
-
-        private void ApplyToCameras(CameraOperation operation)
-        {
-            operation(SteamCam.GetComponent<Camera>());
         }
 
         protected override void OnUpdate()

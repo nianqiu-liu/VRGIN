@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using UnityEngine;
 using VRGIN.Core;
+using IntPtr = System.IntPtr;
 
 namespace VRGIN.Native
 {
@@ -20,21 +22,45 @@ namespace VRGIN.Native
                 {
                     var num = 0;
                     var lpRect = default(WindowsInterop.RECT);
-                    _ = Process.GetCurrentProcess().ProcessName;
-                    var rootWindowsOfProcess = GetRootWindowsOfProcess(Process.GetCurrentProcess().Id);
-                    foreach (var item in rootWindowsOfProcess)
+                    var currentProcess = Process.GetCurrentProcess();
+                    var rootWindowsOfProcess = GetRootWindowsOfProcess(currentProcess.Id);
+
+                    if (rootWindowsOfProcess.Count == 0)
                     {
-                        if (WindowsInterop.GetWindowRect(item, ref lpRect) && lpRect.Right - lpRect.Left > num)
+                        // Looks like on some Linux systems no windows are reported
+                        // These workarounds are far from perfect but it's better than not working at all
+                        try
                         {
-                            num = lpRect.Right - lpRect.Left;
-                            _Handle = item;
+                            _Handle = currentProcess.MainWindowHandle;
+                            VRLog.Warn("Assuming MainWindowHandle is the main window. Cursor and GUI might have issues!");
+                        }
+                        catch (Exception e)
+                        {
+                            VRLog.Error(e);
+                        }
+
+                        if (!_Handle.HasValue || _Handle.Value == IntPtr.Zero)
+                        {
+                            VRLog.Warn("No window handles found! Cursor and GUI are going to have issues!");
+                            _Handle = IntPtr.Zero;
                         }
                     }
-
-                    if (!_Handle.HasValue)
+                    else
                     {
-                        VRLog.Warn("Fall back to first handle!");
-                        _Handle = rootWindowsOfProcess.First();
+                        foreach (var item in rootWindowsOfProcess)
+                        {
+                            if (WindowsInterop.GetWindowRect(item, ref lpRect) && lpRect.Right - lpRect.Left > num)
+                            {
+                                num = lpRect.Right - lpRect.Left;
+                                _Handle = item;
+                            }
+                        }
+
+                        if (!_Handle.HasValue)
+                        {
+                            VRLog.Warn("Fall back to first handle!");
+                            _Handle = rootWindowsOfProcess.First();
+                        }
                     }
                 }
 
@@ -92,10 +118,14 @@ namespace VRGIN.Native
 
         public static WindowsInterop.RECT GetClientRect()
         {
+            var handle = Handle;
+            if (handle == IntPtr.Zero)
+                return new WindowsInterop.RECT(0, 0, Screen.width, Screen.height);
+
             var lpRect = default(WindowsInterop.RECT);
-            WindowsInterop.GetClientRect(Handle, ref lpRect);
+            WindowsInterop.GetClientRect(handle, ref lpRect);
             var lpPoint = default(WindowsInterop.POINT);
-            WindowsInterop.ClientToScreen(Handle, ref lpPoint);
+            WindowsInterop.ClientToScreen(handle, ref lpPoint);
             lpRect.Left = lpPoint.X;
             lpRect.Top = lpPoint.Y;
             lpRect.Right += lpPoint.X;
@@ -105,7 +135,9 @@ namespace VRGIN.Native
 
         public static void Activate()
         {
-            WindowsInterop.SetForegroundWindow(Handle);
+            var handle = Handle;
+            if (handle != IntPtr.Zero)
+                WindowsInterop.SetForegroundWindow(handle);
         }
     }
 }

@@ -1,11 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using VRGIN.Helpers;
+using UnityEngine.UI.Collections;
 using VRGIN.Native;
 using VRGIN.Visuals;
 
@@ -18,7 +16,7 @@ namespace VRGIN.Core
             private void OnGUI()
             {
                 GUI.depth = int.MaxValue;
-                if (Event.current.type == EventType.Repaint) SendMessage("OnBeforeGUI");
+                if (Event.current.type == EventType.Repaint) SendMessage(nameof(OnBeforeGUI));
             }
         }
 
@@ -27,7 +25,7 @@ namespace VRGIN.Core
             private void OnGUI()
             {
                 GUI.depth = int.MinValue;
-                if (Event.current.type == EventType.Repaint) SendMessage("OnAfterGUI");
+                if (Event.current.type == EventType.Repaint) SendMessage(nameof(OnAfterGUI));
             }
         }
 
@@ -45,7 +43,9 @@ namespace VRGIN.Core
                 }
             }
 
+#pragma warning disable CS0672
             public override int priority => GetOrder();
+#pragma warning restore CS0672
 
             public override int sortOrderPriority => GetOrder();
 
@@ -59,11 +59,9 @@ namespace VRGIN.Core
 
         private static VRGUI _Instance;
 
-        private IDictionary _Registry;
+        private Dictionary<Canvas, IndexedSet<Graphic>> _Registry;
 
         private List<IScreenGrabber> _ScreenGrabbers = new List<IScreenGrabber>();
-
-        private FieldInfo _Graphics;
 
         private RenderTexture _PrevRT;
 
@@ -144,8 +142,8 @@ namespace VRGIN.Core
                 transform.gameObject.AddComponent<SlowGUI>();
             }
 
-            var num = (float)Screen.height * 0.5f;
-            var x = (float)Screen.width * 0.5f;
+            var num = Screen.height * 0.5f;
+            var x = Screen.width * 0.5f;
             _VRGUICamera = new GameObject("VRGIN_GUICamera").AddComponent<Camera>();
             _VRGUICamera.transform.SetParent(transform, false);
             if (VR.Context.PreferredGUI == GUIType.IMGUI)
@@ -164,8 +162,7 @@ namespace VRGIN.Core
             _VRGUICamera.clearFlags = CameraClearFlags.Color;
             _VRGUICamera.orthographic = true;
             _VRGUICamera.useOcclusionCulling = false;
-            _Graphics = typeof(GraphicRegistry).GetField("m_Graphics", BindingFlags.Instance | BindingFlags.NonPublic);
-            _Registry = _Graphics.GetValue(GraphicRegistry.instance) as IDictionary;
+            _Registry = GraphicRegistry.instance.m_Graphics;
             DontDestroyOnLoad(gameObject);
 
             SceneManager.sceneLoaded += SceneLoaded;
@@ -185,7 +182,7 @@ namespace VRGIN.Core
         protected void CatchCanvas()
         {
             _VRGUICamera.targetTexture = uGuiTexture;
-            foreach (var item in (_Registry.Keys as ICollection<Canvas>).Where((Canvas c) => c).ToList().Where(IsUnprocessed))
+            foreach (var item in _Registry.Keys.Where(IsUnprocessed))
             {
                 if (VR.Interpreter.IsIgnoredCanvas(item)) continue;
                 VRLog.Info("Add {0} [Layer: {1}, SortingLayer: {2}, SortingOrder: {3}, RenderMode: {4}, Camera: {5}, Position: {6} ]", item.name, LayerMask.LayerToName(item.gameObject.layer),
@@ -209,13 +206,13 @@ namespace VRGIN.Core
                 if (VR.Context.GUIAlternativeSortingMode)
                 {
                     var component = item.GetComponent<GraphicRaycaster>();
-                    if ((bool)component)
+                    if (component)
                     {
-                        DestroyImmediate(component);
                         var obj2 = item.gameObject.AddComponent<SortingAwareGraphicRaycaster>();
-                        UnityHelper.SetPropertyOrField(obj2, "ignoreReversedGraphics", UnityHelper.GetPropertyOrField(component, "ignoreReversedGraphics"));
-                        UnityHelper.SetPropertyOrField(obj2, "blockingObjects", UnityHelper.GetPropertyOrField(component, "blockingObjects"));
-                        UnityHelper.SetPropertyOrField(obj2, "m_BlockingMask", UnityHelper.GetPropertyOrField(component, "m_BlockingMask"));
+                        obj2.ignoreReversedGraphics = component.ignoreReversedGraphics;
+                        obj2.blockingObjects = component.blockingObjects;
+                        obj2.m_BlockingMask = component.m_BlockingMask;
+                        DestroyImmediate(component);
                     }
                 }
             }
@@ -229,7 +226,7 @@ namespace VRGIN.Core
             if (_Listeners < 0) VRLog.Warn("Numbers don't add up!");
         }
 
-        
+
         private void SceneLoaded(Scene scene, LoadSceneMode mode)
         {
             if (mode == LoadSceneMode.Single)

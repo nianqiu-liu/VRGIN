@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using UnityEngine;
 using VRGIN.Core;
+using Debug = System.Diagnostics.Debug;
 using IntPtr = System.IntPtr;
 
 namespace VRGIN.Native
@@ -20,8 +21,6 @@ namespace VRGIN.Native
             {
                 if (!_Handle.HasValue)
                 {
-                    var num = 0;
-                    var lpRect = default(WindowsInterop.RECT);
                     var currentProcess = Process.GetCurrentProcess();
                     var rootWindowsOfProcess = GetRootWindowsOfProcess(currentProcess.Id);
 
@@ -47,12 +46,14 @@ namespace VRGIN.Native
                     }
                     else
                     {
-                        foreach (var item in rootWindowsOfProcess)
+                        var best = double.NegativeInfinity;
+                        foreach (var handle in rootWindowsOfProcess)
                         {
-                            if (WindowsInterop.GetWindowRect(item, ref lpRect) && lpRect.Right - lpRect.Left > num)
+                            var score = MainWindowScore(handle);
+                            if (score.HasValue && score.Value >= best)
                             {
-                                num = lpRect.Right - lpRect.Left;
-                                _Handle = item;
+                                best = score.Value;
+                                _Handle = handle;
                             }
                         }
 
@@ -64,8 +65,38 @@ namespace VRGIN.Native
                     }
                 }
 
+                Debug.Assert(_Handle != null, "_Handle != null");
                 return _Handle.Value;
             }
+        }
+
+        /// <summary>
+        /// Returns a score indicating how likely the given window handle points
+        /// to the main game window. This is needed because our versions of Unity
+        /// don't offer a good way to find the main window.
+        /// </summary>
+        /// <param name="handle"></param>
+        /// <returns></returns>
+        private static double? MainWindowScore(IntPtr handle)
+        {
+            WindowsInterop.RECT rect = new WindowsInterop.RECT();
+            if (!WindowsInterop.GetClientRect(handle, ref rect))
+                return null;
+            double score = 0;
+            int width = rect.Right - rect.Left;
+            int height = rect.Bottom - rect.Top;
+            if (width == Screen.width && height == Screen.height)
+            {
+                score += 1;
+            }
+            score -= Math.Abs(Math.Log(Screen.width + 1) - Math.Log(width + 1)) +
+                     Math.Abs(Math.Log(Screen.height + 1) - Math.Log(height + 1));
+            if (GetWindowText(handle).Contains("BepInEx"))
+            {
+                // Likely a BepInEx console.
+                score -= 1;
+            }
+            return score;
         }
 
         private static List<IntPtr> GetRootWindowsOfProcess(int pid)
@@ -105,7 +136,9 @@ namespace VRGIN.Native
 
         public static string GetWindowText(IntPtr hWnd)
         {
-            var stringBuilder = new StringBuilder(WindowsInterop.GetWindowTextLength(hWnd) + 1);
+            var windowTextLength = WindowsInterop.GetWindowTextLength(hWnd);
+            if (windowTextLength == 0) return string.Empty;
+            var stringBuilder = new StringBuilder(windowTextLength + 1);
             WindowsInterop.GetWindowText(hWnd, stringBuilder, stringBuilder.Capacity);
             return stringBuilder.ToString();
         }

@@ -105,28 +105,38 @@ namespace VRGIN.Core
                 _CheckedCameras.Clear();
         }
 
+        // A scratch-pad buffer to keep OnUpdate allocation-free.
+        private Camera[] _cameraBuffer = Array.Empty<Camera>();
         protected override void OnUpdate()
         {
-            foreach (var item in Camera.allCameras.Except(_CheckedCameras).ToList())
+            int numCameras = Camera.allCamerasCount;
+            if (_cameraBuffer.Length < numCameras)
+                _cameraBuffer = new Camera[numCameras];
+            Camera.GetAllCameras(_cameraBuffer);
+            for(int i = 0; i < numCameras; i++)
             {
-                _CheckedCameras.Add(item);
-                var cameraJudgement = VR.Interpreter.JudgeCamera(item);
-                VRLog.Info("Detected new camera {0} Action: {1}", item.name, cameraJudgement);
-                switch (cameraJudgement)
+                var camera = _cameraBuffer[i];
+                _cameraBuffer[i] = null;
+                if (_CheckedCameras.Contains(camera))
+                    continue;
+                _CheckedCameras.Add(camera);
+                var judgement = VR.Interpreter.JudgeCamera(camera);
+                VRLog.Info("Detected new camera {0} Action: {1}", camera.name, judgement);
+                switch (judgement)
                 {
                     case CameraJudgement.MainCamera:
-                        VR.Camera.Copy(item, true);
+                        VR.Camera.Copy(camera, true);
                         if (_IsEnabledEffects) ApplyEffects();
                         break;
                     case CameraJudgement.SubCamera:
-                        VR.Camera.Copy(item);
+                        VR.Camera.Copy(camera);
                         break;
                     case CameraJudgement.GUI:
-                        VR.GUI.AddCamera(item);
+                        VR.GUI.AddCamera(camera);
                         break;
                     case CameraJudgement.GUIAndCamera:
-                        VR.Camera.Copy(item, false, true);
-                        VR.GUI.AddCamera(item);
+                        VR.Camera.Copy(camera, false, true);
+                        VR.GUI.AddCamera(camera);
                         break;
                 }
             }
